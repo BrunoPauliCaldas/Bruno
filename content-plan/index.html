@@ -12,8 +12,8 @@
   --paper:#FFFFFF; --cell:#FFFFFF; --past:#F5F5F5; --ink:#111111; --ink-2:#6E6E6E; --ink-3:#AAAAAA;
   --rule:#E0E0E0; --rule-2:#111111; --accent:#111111; --accent-ink:#FFFFFF;
   /* Brand colours: Lavender #A785FE, Pink Pearl #EAA9CB, Booger Buster #D5EF72, GO Green #00B65C,
-     Red (RYB) #F8311C, United Nations Blue #537CDE. Strips use them at full strength; card fills at a 45% tint. */
-  --st-idea:#A8A8A8; --st-wip:#D5EF72; --st-review:#A785FE; --st-sched:#00B65C;
+     Red (RYB) #F8311C, United Nations Blue #537CDE. Status strips: Paper (idea, no colour yet), Pink Pearl, Lavender, GO Green at full strength; card fills at a 45% tint. */
+  --st-idea:#EFECE6; --st-wip:#EAA9CB; --st-review:#A785FE; --st-sched:#00B65C;
   --t-lavender:#D7C8FF; --t-pink:#F6D8E8; --t-booger:#ECF8C0; --t-green:#8CDEB6; --t-red:#FCA299; --t-blue:#B2C4F0; --t-paper:#EFECE6;
   --drop:#F0F0F0; --ghost-shadow:0 10px 24px rgba(17,17,17,.16);
   --font:"OMNI TONE Grotesk","Helvetica Neue",Helvetica,Arial,sans-serif;
@@ -38,10 +38,6 @@ button,input,select,textarea{font:inherit;color:inherit}
 .brand h1 .mark{font-size:30px}
 .brand h1 .what{font-size:17px;letter-spacing:.02em}
 .brand .sub{color:var(--ink-2);margin-top:8px;font-size:13.5px}
-.legend{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;font-size:12.5px;color:var(--ink-2)}
-.legend .key{display:inline-flex;align-items:center;gap:6px;color:var(--ink);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase}
-.legend .sw{width:4px;height:16px;border-radius:1px;display:inline-block}
-.legend .hint{flex-basis:100%;font-size:12.5px}
 .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-left:auto}
 .sync{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);padding-inline:6px;min-width:5em}
 .sync.bad{color:var(--ink)}
@@ -99,7 +95,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .card .status{grid-column:2;justify-self:end;margin:0 6px 6px 0}
 .card.s-WIP{--st:var(--st-wip)}.card.s-REVIEW{--st:var(--st-review)}.card.s-SCHEDULED{--st:var(--st-sched)}
 .card.dragging{opacity:.35}
-.grip{touch-action:none;cursor:grab;display:flex;align-items:center;justify-content:center;background:var(--st);border-radius:3px 0 0 3px}
+.grip{touch-action:none;cursor:grab;display:flex;align-items:center;justify-content:center;background:var(--st);border-radius:3px 0 0 3px;box-shadow:inset -1px 0 0 rgba(17,17,17,.12)}
 .grip::before{content:"";width:4px;height:18px;border-left:2px dotted rgba(0,0,0,.55);border-right:2px dotted rgba(0,0,0,.55)}
 .card-main{display:block;text-align:left;border:0;background:transparent;padding:7px 8px 4px 8px;cursor:pointer;border-radius:0 var(--rc) var(--rc) 0;min-width:0}
 .card-main:hover{background:rgba(255,255,255,.45)}
@@ -108,7 +104,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .card .status{border:1px solid currentColor;border-radius:var(--rc);padding:2px 7px;background:transparent;font-size:9.5px;letter-spacing:.06em;
   text-transform:uppercase;line-height:1.5;cursor:pointer;min-height:22px;display:inline-flex;align-items:center}
 .card .status:hover{background:var(--ink);color:var(--paper)}
-.card .status::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--st);margin-right:5px}
+.card .status::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--st);margin-right:5px;box-shadow:inset 0 0 0 1px rgba(17,17,17,.2)}
 .card .note{display:block;font-size:12px;color:var(--ink);margin-top:3px;overflow-wrap:anywhere}
 @media (pointer:coarse){.card{grid-template-columns:30px minmax(0,1fr)}.card .status{min-height:30px;padding-inline:9px}}
 .ghost{position:fixed;z-index:50;pointer-events:none;box-shadow:var(--ghost-shadow);opacity:.96;transform:rotate(-1deg)}
@@ -142,7 +138,7 @@ fieldset{border:0;padding:0;margin:0}
   letter-spacing:.08em;text-transform:uppercase;border-left:1.5px solid var(--ink)}
 .seg label:first-child{border-left:0}
 .seg input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
-.seg label .sw{width:4px;height:14px;border-radius:1px}
+.seg label .sw{width:4px;height:14px;border-radius:1px;box-shadow:inset 0 0 0 1px rgba(17,17,17,.2)}
 .seg label:has(input:checked){background:var(--ink);color:var(--paper)}
 .seg input:focus-visible+span{outline:2px solid var(--ink);outline-offset:-5px}
 .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
@@ -199,13 +195,6 @@ hr{border:0;border-top:1px solid var(--rule);margin:4px 0}
     <div class="brand">
       <h1><span class="mark">OMNI TONE</span><span class="what">Content plan</span></h1>
       <p class="sub">Instagram planning board. Times in Europe/Zurich, weeks start on Monday.</p>
-    </div>
-    <div class="legend" aria-label="Status colours, in order">
-      <span class="key"><span class="sw" style="background:var(--st-idea)"></span>Idea</span>
-      <span class="key"><span class="sw" style="background:var(--st-wip)"></span>WIP</span>
-      <span class="key"><span class="sw" style="background:var(--st-review)"></span>Review</span>
-      <span class="key"><span class="sw" style="background:var(--st-sched)"></span>Scheduled</span>
-      <span class="hint">The strip on a card's edge is its status; the fill is its content type. Click the status to move it one step forward, Shift+click to move it back.</span>
     </div>
     <div class="toolbar">
       <button class="btn btn-sm" id="btn-earlier" type="button">4 earlier weeks</button>
