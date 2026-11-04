@@ -38,7 +38,14 @@ button,input,select,textarea{font:inherit;color:inherit}
 .brand h1 .mark{font-size:30px}
 .brand h1 .what{font-size:17px;letter-spacing:.01em;text-transform:none;color:var(--ink-2)}
 .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-left:auto}
-.sync{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);padding-inline:6px;min-width:5em}
+.sync{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);padding-inline:6px}
+.menu{position:relative}
+.menu summary{list-style:none;cursor:pointer}
+.menu summary::-webkit-details-marker{display:none}
+.menu[open] summary{background:var(--ink);color:var(--paper)}
+.menu-list{position:absolute;right:0;top:calc(100% + 6px);z-index:20;min-width:200px;background:var(--paper);border:1.5px solid var(--ink);border-radius:var(--r);padding:4px;display:flex;flex-direction:column}
+.menu-item{display:block;width:100%;text-align:left;border:0;background:transparent;padding:10px 12px;border-radius:var(--rc);cursor:pointer;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;min-height:40px}
+.menu-item:hover{background:var(--ink);color:var(--paper)}
 .sync.bad{color:var(--ink)}
 
 /* Buttons: the site's bordered uppercase button, inverting on hover */
@@ -199,11 +206,16 @@ hr{border:0;border-top:1px solid var(--rule);margin:4px 0}
       <h1><span class="mark">OMNI TONE</span><span class="what">Content planner</span></h1>
     </div>
     <div class="toolbar">
-      <button class="btn btn-sm" id="btn-earlier" type="button">4 earlier weeks</button>
-      <button class="btn btn-sm" id="btn-thisweek" type="button">This week</button>
-      <button class="btn btn-sm" id="btn-later" type="button">4 later weeks</button>
-      <button class="btn btn-sm" id="btn-lists" type="button">Edit lists</button>
       <span class="sync" id="sync" role="status" aria-live="polite">Connecting…</span>
+      <details class="menu" id="menu">
+        <summary class="btn btn-sm" aria-label="Open menu">Menu</summary>
+        <div class="menu-list" role="group" aria-label="Board actions">
+          <button class="menu-item" id="btn-thisweek" type="button">This week</button>
+          <button class="menu-item" id="btn-earlier" type="button">4 earlier weeks</button>
+          <button class="menu-item" id="btn-later" type="button">4 later weeks</button>
+          <button class="menu-item" id="btn-lists" type="button">Edit lists</button>
+        </div>
+      </details>
     </div>
   </header>
 
@@ -716,6 +728,10 @@ $('#btn-earlier').addEventListener('click', () => { state.startMonday = addDays(
 $('#btn-later').addEventListener('click', () => { state.weeks = Math.min(state.weeks + 4, 60); render(); });
 $('#btn-thisweek').addEventListener('click', () => { state.today = todayISO(); state.startMonday = mondayOf(state.today); state.weeks = 6; render(); window.scrollTo({ top: 0 }); });
 $('#btn-add-backlog').addEventListener('click', () => openCard(null, null));
+const menu = $('#menu');
+menu.addEventListener('click', e => { if (e.target.closest('.menu-item')) menu.open = false; });
+document.addEventListener('click', e => { if (menu.open && !menu.contains(e.target)) menu.open = false; });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && menu.open) { menu.open = false; menu.querySelector('summary').focus(); } });
 
 /* ---------- drag and drop (pointer events; grip on touch, whole card with a mouse) ---------- */
 let drag = null, lastDragEnd = 0, scrollRaf = 0;

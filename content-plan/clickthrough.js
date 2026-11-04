@@ -11,6 +11,7 @@ const ok = (name, cond, extra='') => { log.push(`${cond ? 'PASS' : 'FAIL'} ${nam
   page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
   page.on('pageerror', e => errors.push('pageerror: ' + e.message));
   await page.goto(URL); await page.waitForTimeout(400);
+  const viaMenu = async id => { await page.click('#menu summary'); await page.click(id); };
   ok('sync shows local preview', (await page.textContent('#sync')).includes('Local preview'));
   ok('6 weeks rendered', await page.locator('.week').count() === 6);
   ok('today cell exists', await page.locator('.day.today').count() === 1);
@@ -65,7 +66,7 @@ const ok = (name, cond, extra='') => { log.push(`${cond ? 'PASS' : 'FAIL'} ${nam
   ok('stamp adds 4 cards in week 2', await page.locator('.week').nth(1).locator('.card').count() === 4);
   ok('stamped cards are IDEA', await page.locator('.week').nth(1).locator('.card.s-IDEA').count() === 4);
   // lists dialog: add owner
-  await page.click('#btn-lists');
+  await viaMenu('#btn-lists');
   ok('type rows have a tint select', await page.locator('#l-types .item:not(.new) select').count() === 10);
   await page.selectOption('#l-types .item:not(.new) select >> nth=1', 'blue');
   await page.fill('#l-owners .item.new input', 'Till'); await page.keyboard.press('Enter');
@@ -83,13 +84,13 @@ const ok = (name, cond, extra='') => { log.push(`${cond ? 'PASS' : 'FAIL'} ${nam
   ok('undo restores card', await page.locator('#backlog .card').count() === 1);
   // archive, restore from lists, delete for good
   await page.click('#backlog .card .card-main'); await page.click('#cd-archive'); await page.waitForTimeout(80);
-  await page.click('#btn-lists');
+  await viaMenu('#btn-lists');
   ok('archived card listed', await page.locator('#l-archived .item').count() === 1);
   await page.click('#l-archived .item button:has-text("Restore")'); await page.waitForTimeout(80);
   ok('restore works', await page.locator('#backlog .card').count() === 1 && await page.locator('#l-archived .item').count() === 0);
   await page.keyboard.press('Escape');
   await page.click('#backlog .card .card-main'); await page.click('#cd-archive'); await page.waitForTimeout(80);
-  await page.click('#btn-lists');
+  await viaMenu('#btn-lists');
   await page.click('#l-archived .item button:has-text("Delete for good")');
   ok('delete is two-step', (await page.textContent('#l-archived .item button.btn-danger')) === 'Really delete?');
   await page.click('#l-archived .item button.btn-danger'); await page.waitForTimeout(80);
@@ -97,15 +98,17 @@ const ok = (name, cond, extra='') => { log.push(`${cond ? 'PASS' : 'FAIL'} ${nam
   await page.keyboard.press('Escape');
   ok('Escape closes lists dialog', !(await page.locator('#lists-dialog').evaluate(d => d.open)));
   // window controls
-  await page.click('#btn-earlier'); ok('earlier adds 4 weeks', await page.locator('.week').count() === 10);
-  await page.click('#btn-later'); ok('later adds 4 weeks', await page.locator('.week').count() === 14);
-  await page.click('#btn-thisweek'); ok('this week resets to 6', await page.locator('.week').count() === 6 && (await page.locator('.week').first().locator('.day.today').count()) === 1);
+  await viaMenu('#btn-earlier'); ok('earlier adds 4 weeks', await page.locator('.week').count() === 10);
+  await viaMenu('#btn-later'); ok('later adds 4 weeks', await page.locator('.week').count() === 14);
+  await viaMenu('#btn-thisweek'); ok('this week resets to 6', await page.locator('.week').count() === 6 && (await page.locator('.week').first().locator('.day.today').count()) === 1);
+  await page.click('#menu summary'); await page.keyboard.press('Escape');
+  ok('Escape closes the menu', !(await page.locator('#menu').evaluate(d => d.open)));
   // keyboard: tab reaches a card and Enter opens it
   await page.focus('.week .card .card-main'); await page.keyboard.press('Enter');
   ok('Enter on focused card opens editor', await page.locator('#card-dialog').evaluate(d => d.open));
   await page.keyboard.press('Escape');
   // validation: empty lists
-  await page.click('#btn-lists');
+  await viaMenu('#btn-lists');
   while (await page.locator('#l-owners .item:not(.new) button').count()) await page.locator('#l-owners .item:not(.new) button').first().click();
   await page.click('#ld-save');
   ok('lists validation blocks empty owners', !(await page.locator('#ld-err').evaluate(e => e.hidden)));
