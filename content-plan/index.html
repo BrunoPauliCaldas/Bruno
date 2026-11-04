@@ -360,6 +360,10 @@ const PREVIEW_LISTS = {
     'Field Testing / World piece': 'sand', 'BTS reel': 'stone' },
 };
 const tintOf = type => { const k = state.lists.typeColors[type]; return TINT_KEYS.includes(k) ? k : null; };
+// The stamp set is written once; the team may respell a type later ("Sensory Reel"). Match ignoring case and spaces.
+const normName = s => String(s).toLowerCase().replace(/\s+/g, '');
+const resolveType = name => state.lists.types.find(t => normName(t) === normName(name)) || name;
+const resolveOwner = name => state.lists.owners.find(o => normName(o) === normName(name)) || name;
 const tintCss = type => { const k = tintOf(type); return k ? `var(--t-${k})` : ''; };
 
 const $ = (s, el = document) => el.querySelector(s);
@@ -646,7 +650,7 @@ function askStamp(mon) {
   confirmAction = async () => {
     const set = [...STAMP_FIXED, alt];
     let n = 0;
-    for (const s of set) { await createCard({ type: s.type, owner: s.owner, status: 'IDEA', date: addDays(mon, s.day), order: Date.now() + n++ }); }
+    for (const s of set) { await createCard({ type: resolveType(s.type), owner: resolveOwner(s.owner), status: 'IDEA', date: addDays(mon, s.day), order: Date.now() + n++ }); }
     toast(`Stamped 4 cards into week ${wk}. Drag them to other days as needed.`);
   };
   $('#cf-text').textContent = `Add the standard set to week ${wk} (${fmtRange(mon)}): Sensory reel (Anouk), Story post (Bruno), Process carousel (Anouk) and, this week, ${alt.type} (${alt.owner}). All start as Idea.`;
