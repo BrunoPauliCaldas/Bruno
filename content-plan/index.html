@@ -75,10 +75,11 @@ button,input,select,textarea{font:inherit;color:inherit}
 .gutter .wn{font-size:22px;line-height:1;letter-spacing:-.01em}
 .gutter .wn small{display:block;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);margin-bottom:5px}
 .gutter .range{display:none;color:var(--ink-2);font-size:12.5px}
-.day{border-left:1px solid var(--rule);background:var(--cell);height:184px;display:flex;flex-direction:column;min-width:0}
+.day{border-left:1px solid var(--rule);background:var(--cell);height:208px;display:flex;flex-direction:column;min-width:0}
 .day.past{background:var(--past)}
 .day.drop{background:var(--drop);box-shadow:inset 0 0 0 1.5px var(--ink)}
-.day-head{display:flex;align-items:baseline;gap:6px;padding:8px 10px 4px}
+.day-head{display:flex;align-items:center;gap:6px;padding:6px 6px 2px 10px;min-height:36px}
+.day-head .add{margin-left:auto;min-height:28px;padding:4px 8px}
 .day-head .n{font-size:14px;min-width:1.6em}
 .day.past .n{color:var(--ink-2)}
 .day-head .m{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}
@@ -86,7 +87,7 @@ button,input,select,textarea{font:inherit;color:inherit}
   background:var(--ink);color:var(--paper);margin:-4px 0 -4px -4px}
 .cards{display:flex;flex-direction:column;gap:6px;padding:4px 8px;flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain}
 .cards > .card{flex:none}
-.day .add{margin:2px 8px 8px;align-self:flex-start}
+.cards{padding-bottom:8px}
 
 /* Cards */
 .card{position:relative;display:grid;grid-template-columns:22px minmax(0,1fr);grid-template-rows:1fr auto;border-radius:var(--rc);
@@ -184,7 +185,7 @@ hr{border:0;border-top:1px solid var(--rule);margin:4px 0}
   .day-head .d{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}
   .day.today .n{margin:0 0 0 -3px}
   .cards{padding:6px 8px 2px 0}
-  .day .add{grid-column:2;margin:0 0 6px 0}
+  .day-head .add{margin:2px 0 0 -8px}
   .lane{grid-template-columns:1fr}
 }
 @media (min-width:761px){.day-head .d{display:none}}
@@ -522,11 +523,11 @@ function weekEl(mon, by) {
     const d = el('div', { class: 'day' + (date < state.today ? ' past' : '') + (date === state.today ? ' today' : ''), 'data-drop': 'day', 'data-date': date });
     const head = el('div', { class: 'day-head' }, el('span', { class: 'd', text: DAYS[i] }), el('span', { class: 'n', text: String(p.d) }));
     if (p.d === 1 || (i === 0 && mon === state.startMonday)) head.append(el('span', { class: 'm', text: MONTHS[p.m - 1] + (p.m === 1 && p.d === 1 ? ' ' + p.y : '') }));
+    if (!state.readOnly) head.append(addBtn(date));
     d.append(head);
     const cards = el('div', { class: 'cards' });
     for (const c of by.get(date) || []) cards.append(cardEl(c));
     d.append(cards);
-    if (!state.readOnly) d.append(addBtn(date));
     w.append(d);
   }
   return w;
