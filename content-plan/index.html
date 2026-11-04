@@ -5,13 +5,15 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:ital,wght@0,400;0,500;1,400&display=swap">
 <style>
 /* Layout: a wall planner. A narrow left gutter carries the week number in serif; seven hairline-ruled
-   day columns follow; a heavy rule sits above every week. Cards are flat colour blocks keyed to status.
+   day columns follow; a heavy rule sits above every week. A card's fill is its content type's tint; the status sits on the left edge as a solid strip.
    Colour: cool paper, one red accent (today, focus), four status fills that read apart in both themes.
    Type: IBM Plex Sans for the working text (tabular figures), IBM Plex Serif for the few printed labels. */
 :root{
   --paper:#F5F5F2; --cell:#FBFBF9; --past:#EDEEEA; --ink:#1A1B19; --ink-2:#585B55;
   --rule:#D3D5CF; --rule-2:#1A1B19; --accent:#C62E22; --accent-ink:#FFFFFF;
-  --s-idea:#E3E5E0; --s-wip:#F3DF72; --s-review:#D6C3EC; --s-sched:#B4DDA7;
+  --st-idea:#9A9E97; --st-wip:#E2C318; --st-review:#9B7BD0; --st-sched:#4FA85A;
+  --t-rose:#EAC9C5; --t-apricot:#F0D3B5; --t-straw:#E9DFA8; --t-sage:#CFDCC0; --t-mint:#C4DED3;
+  --t-sky:#C6D8E6; --t-lilac:#D6CDE6; --t-mauve:#E1C9DA; --t-sand:#E2D8C8; --t-stone:#D6D8D3;
   --drop:#FFF4D6; --ghost-shadow:0 8px 20px rgba(26,27,25,.18);
   --font:"IBM Plex Sans","Helvetica Neue",Arial,sans-serif;
   --serif:"IBM Plex Serif",Georgia,"Times New Roman",serif;
@@ -21,7 +23,9 @@
   :root:not([data-theme="light"]){
     --paper:#161715; --cell:#1C1D1A; --past:#121311; --ink:#ECEDE8; --ink-2:#A6A9A1;
     --rule:#34362F; --rule-2:#ECEDE8; --accent:#F26A5C; --accent-ink:#161715;
-    --s-idea:#3B3E39; --s-wip:#6E5C0E; --s-review:#4F3B73; --s-sched:#2A5D2C;
+    --st-idea:#7D817A; --st-wip:#D9B81A; --st-review:#A98AE0; --st-sched:#5DBA68;
+    --t-rose:#5A3634; --t-apricot:#5E4328; --t-straw:#5A5220; --t-sage:#35482C; --t-mint:#2A4A3E;
+    --t-sky:#2B4152; --t-lilac:#433858; --t-mauve:#503446; --t-sand:#4B4336; --t-stone:#3D403B;
     --drop:#2E2A16; --ghost-shadow:0 8px 20px rgba(0,0,0,.5);
     color-scheme:dark;
   }
@@ -29,7 +33,9 @@
 :root[data-theme="dark"]{
   --paper:#161715; --cell:#1C1D1A; --past:#121311; --ink:#ECEDE8; --ink-2:#A6A9A1;
   --rule:#34362F; --rule-2:#ECEDE8; --accent:#F26A5C; --accent-ink:#161715;
-  --s-idea:#3B3E39; --s-wip:#6E5C0E; --s-review:#4F3B73; --s-sched:#2A5D2C;
+  --st-idea:#7D817A; --st-wip:#D9B81A; --st-review:#A98AE0; --st-sched:#5DBA68;
+  --t-rose:#5A3634; --t-apricot:#5E4328; --t-straw:#5A5220; --t-sage:#35482C; --t-mint:#2A4A3E;
+  --t-sky:#2B4152; --t-lilac:#433858; --t-mauve:#503446; --t-sand:#4B4336; --t-stone:#3D403B;
   --drop:#2E2A16; --ghost-shadow:0 8px 20px rgba(0,0,0,.5);
   color-scheme:dark;
 }
@@ -50,7 +56,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .brand .sub{color:var(--ink-2);margin-top:6px;font-size:13px}
 .legend{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;font-size:12.5px;color:var(--ink-2)}
 .legend .key{display:inline-flex;align-items:center;gap:6px;color:var(--ink)}
-.legend .sw{width:14px;height:14px;border-radius:var(--r);border:1px solid var(--rule);display:inline-block}
+.legend .sw{width:6px;height:16px;border-radius:1px;display:inline-block}
 .legend .hint{flex-basis:100%;font-size:12px}
 .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-left:auto}
 .sync{font-size:12px;color:var(--ink-2);padding-inline:6px;min-width:5em}
@@ -102,14 +108,17 @@ button,input,select,textarea{font:inherit;color:inherit}
 .day .add{margin:2px 8px 8px;align-self:flex-start;font-size:12.5px}
 
 /* Cards */
-.card{position:relative;display:grid;grid-template-columns:22px minmax(0,1fr);grid-template-rows:1fr auto;border-radius:var(--r);background:var(--s-idea);
-  color:var(--ink);user-select:none;-webkit-user-select:none;min-height:44px}
+.card{position:relative;display:grid;grid-template-columns:22px minmax(0,1fr);grid-template-rows:1fr auto;border-radius:var(--r);
+  background:var(--tint,var(--cell));border:1px solid rgba(128,128,128,.28);
+  color:var(--ink);user-select:none;-webkit-user-select:none;min-height:44px;--st:var(--st-idea)}
 .card .grip{grid-row:1/3}
 .card .status{grid-column:2;justify-self:end;margin:0 6px 6px 0}
-.card.s-WIP{background:var(--s-wip)}.card.s-REVIEW{background:var(--s-review)}.card.s-SCHEDULED{background:var(--s-sched)}
+.card.s-WIP{--st:var(--st-wip)}.card.s-REVIEW{--st:var(--st-review)}.card.s-SCHEDULED{--st:var(--st-sched)}
 .card.dragging{opacity:.35}
-.grip{touch-action:none;cursor:grab;display:flex;align-items:center;justify-content:center;border-right:1px solid rgba(128,128,128,.25)}
-.grip::before{content:"";width:4px;height:18px;border-left:2px dotted currentColor;border-right:2px dotted currentColor;opacity:.55}
+.grip{touch-action:none;cursor:grab;display:flex;align-items:center;justify-content:center;background:var(--st);border-radius:var(--r) 0 0 var(--r)}
+.grip::before{content:"";width:4px;height:18px;border-left:2px dotted rgba(0,0,0,.6);border-right:2px dotted rgba(0,0,0,.6)}
+.card .status::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--st);margin-right:5px;vertical-align:0}
+.sw.t{border-color:rgba(128,128,128,.4)}
 .card-main{display:block;text-align:left;border:0;background:transparent;padding:6px 8px 4px 7px;cursor:pointer;border-radius:0 var(--r) var(--r) 0;min-width:0}
 .card-main:hover{background:rgba(128,128,128,.12)}
 .card .type{display:block;font-weight:500;font-size:13px;line-height:1.3;overflow-wrap:anywhere}
@@ -148,7 +157,7 @@ fieldset{border:0;padding:0;margin:0}
 .seg label{position:relative;display:flex;align-items:center;justify-content:center;gap:6px;min-height:40px;cursor:pointer;font-size:13px;border-left:1px solid var(--ink)}
 .seg label:first-child{border-left:0}
 .seg input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
-.seg label .sw{width:12px;height:12px;border-radius:var(--r);border:1px solid var(--rule)}
+.seg label .sw{width:5px;height:14px;border-radius:1px}
 .seg input:checked+span{font-weight:600}
 .seg label:has(input:checked){background:var(--ink);color:var(--paper)}
 .seg input:focus-visible+span{outline:2px solid var(--accent);outline-offset:-4px}
@@ -160,6 +169,8 @@ fieldset{border:0;padding:0;margin:0}
 .list{display:flex;flex-direction:column;gap:6px}
 .list .item{display:flex;gap:6px;align-items:center}
 .list .item input{flex:1;min-width:0;min-height:38px;padding:6px 9px;border:1px solid var(--rule);border-radius:var(--r);background:var(--paper)}
+.list .item select{min-height:38px;padding:4px 6px;border:1px solid var(--rule);border-radius:var(--r);background:var(--paper);max-width:7.5em}
+.list .item .sw{width:22px;height:22px;border:1px solid var(--rule);border-radius:var(--r);flex:none}
 .list .item.new input{border-color:var(--rule-2)}
 .arch{display:flex;flex-direction:column;gap:6px}
 .arch .item{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;font-size:13px;padding:6px 0;border-top:1px solid var(--rule)}
@@ -205,11 +216,11 @@ hr{border:0;border-top:1px solid var(--rule);margin:4px 0}
       <p class="sub">Instagram planning board. Times in Europe/Zurich, weeks start on Monday.</p>
     </div>
     <div class="legend" aria-label="Status colours, in order">
-      <span class="key"><span class="sw" style="background:var(--s-idea)"></span>Idea</span>
-      <span class="key"><span class="sw" style="background:var(--s-wip)"></span>WIP</span>
-      <span class="key"><span class="sw" style="background:var(--s-review)"></span>Review</span>
-      <span class="key"><span class="sw" style="background:var(--s-sched)"></span>Scheduled</span>
-      <span class="hint">Click a card's status to move it one step forward. Shift+click moves it back.</span>
+      <span class="key"><span class="sw" style="background:var(--st-idea)"></span>Idea</span>
+      <span class="key"><span class="sw" style="background:var(--st-wip)"></span>WIP</span>
+      <span class="key"><span class="sw" style="background:var(--st-review)"></span>Review</span>
+      <span class="key"><span class="sw" style="background:var(--st-sched)"></span>Scheduled</span>
+      <span class="hint">The strip on a card's edge is its status; the fill is its content type. Click the status to move it one step forward, Shift+click to move it back.</span>
     </div>
     <div class="toolbar">
       <button class="btn btn-sm" id="btn-earlier" type="button">4 earlier weeks</button>
@@ -245,7 +256,7 @@ hr{border:0;border-top:1px solid var(--rule);margin:4px 0}
     <p class="sub" id="cd-sub"></p>
     <div class="field">
       <label for="f-type">Type (which show)</label>
-      <select id="f-type" required></select>
+      <div class="row"><select id="f-type" class="grow" required></select><span class="sw t" id="f-type-sw" aria-hidden="true" style="width:28px;height:28px;border:1px solid var(--rule);border-radius:var(--r);flex:none"></span></div>
     </div>
     <div class="field">
       <label for="f-owner">Owner</label>
@@ -254,10 +265,10 @@ hr{border:0;border-top:1px solid var(--rule);margin:4px 0}
     <fieldset class="field">
       <legend>Status</legend>
       <div class="seg" id="f-status">
-        <label><input type="radio" name="status" value="IDEA"><span><span class="sw" style="background:var(--s-idea)"></span>Idea</span></label>
-        <label><input type="radio" name="status" value="WIP"><span><span class="sw" style="background:var(--s-wip)"></span>WIP</span></label>
-        <label><input type="radio" name="status" value="REVIEW"><span><span class="sw" style="background:var(--s-review)"></span>Review</span></label>
-        <label><input type="radio" name="status" value="SCHEDULED"><span><span class="sw" style="background:var(--s-sched)"></span>Scheduled</span></label>
+        <label><input type="radio" name="status" value="IDEA"><span><span class="sw" style="background:var(--st-idea)"></span>Idea</span></label>
+        <label><input type="radio" name="status" value="WIP"><span><span class="sw" style="background:var(--st-wip)"></span>WIP</span></label>
+        <label><input type="radio" name="status" value="REVIEW"><span><span class="sw" style="background:var(--st-review)"></span>Review</span></label>
+        <label><input type="radio" name="status" value="SCHEDULED"><span><span class="sw" style="background:var(--st-sched)"></span>Scheduled</span></label>
       </div>
     </fieldset>
     <div class="field">
@@ -285,7 +296,7 @@ hr{border:0;border-top:1px solid var(--rule);margin:4px 0}
 <dialog id="lists-dialog" aria-labelledby="ld-title">
   <form class="dlg" id="lists-form" method="dialog" novalidate>
     <h2 id="ld-title">Lists</h2>
-    <p class="sub">Content formats and owners offered on every card. Renaming an entry here does not rename cards that already use it.</p>
+    <p class="sub">Content formats and owners offered on every card, and the tint each format gives its cards. Renaming an entry here does not rename cards that already use it.</p>
     <div class="field">
       <span class="field" id="lbl-types" style="font-size:12.5px;color:var(--ink-2)">Content formats</span>
       <div class="list" id="l-types" aria-labelledby="lbl-types"></div>
@@ -337,11 +348,19 @@ const STAMP_FIXED = [
 const STAMP_EVEN = { type: 'CTA post + The Record', owner: 'Bruno', day: 4 };
 const STAMP_ODD = { type: 'Process reel (Michael)', owner: 'Michael', day: 4 };
 // Used only by the local preview (file:// or localhost); the live board reads its lists from the store.
+const TINTS = [['rose', 'Rose'], ['apricot', 'Apricot'], ['straw', 'Straw'], ['sage', 'Sage'], ['mint', 'Mint'],
+  ['sky', 'Sky'], ['lilac', 'Lilac'], ['mauve', 'Mauve'], ['sand', 'Sand'], ['stone', 'Stone']];
+const TINT_KEYS = TINTS.map(t => t[0]);
 const PREVIEW_LISTS = {
   types: ['In Search of What Lasts (hero reel)', 'Sensory reel', 'Explainer reel', 'Process carousel', 'Process reel (Michael)',
     'Story post (Brand Philosophy)', 'CTA post + The Record', 'Playlist post', 'Field Testing / World piece', 'BTS reel'],
   owners: ['Anouk', 'Bruno', 'Michael'],
+  typeColors: { 'In Search of What Lasts (hero reel)': 'rose', 'Sensory reel': 'apricot', 'Explainer reel': 'sky', 'Process carousel': 'sage',
+    'Process reel (Michael)': 'mint', 'Story post (Brand Philosophy)': 'straw', 'CTA post + The Record': 'lilac', 'Playlist post': 'mauve',
+    'Field Testing / World piece': 'sand', 'BTS reel': 'stone' },
 };
+const tintOf = type => { const k = state.lists.typeColors[type]; return TINT_KEYS.includes(k) ? k : null; };
+const tintCss = type => { const k = tintOf(type); return k ? `var(--t-${k})` : ''; };
 
 const $ = (s, el = document) => el.querySelector(s);
 const el = (tag, attrs = {}, ...kids) => {
@@ -381,7 +400,7 @@ const rid = () => 'c_' + (crypto.randomUUID ? crypto.randomUUID().replace(/-/g, 
 const state = {
   db: null, preview: false, readOnly: false,
   cards: new Map(), cardsLoaded: false,
-  lists: { types: [], owners: [] }, listsLoaded: false,
+  lists: { types: [], owners: [], typeColors: {} }, listsLoaded: false,
   today: todayISO(), startMonday: null, weeks: 6,
   pending: 0, syncMode: 'connecting', renderQueued: false,
 };
@@ -487,6 +506,7 @@ function groupCards() {
 }
 function cardEl(c) {
   const a = el('article', { class: 'card s-' + c.status, 'data-id': c.id });
+  const tint = tintCss(c.type); if (tint) a.style.setProperty('--tint', tint);
   a.append(el('span', { class: 'grip', 'aria-hidden': 'true', title: 'Drag to move' }));
   const main = el('button', { class: 'card-main', type: 'button', 'aria-label': `Edit card: ${c.type || 'untitled'}, ${c.owner || 'no owner'}, ${STATUS_LABEL[c.status] || c.status}` });
   main.append(el('span', { class: 'type', text: c.type || '(no type)' }));
@@ -560,6 +580,7 @@ function openCard(id, date) {
   $('#cd-title').textContent = c ? 'Edit card' : 'New card';
   $('#cd-sub').textContent = c ? `Added ${c.createdAt ? c.createdAt.slice(0, 10) : ''}` : (date ? fmtDay(date) : 'Backlog');
   fillSelect($('#f-type'), state.lists.types, c ? c.type : '');
+  syncTypeSwatch();
   fillSelect($('#f-owner'), state.lists.owners, c ? c.owner : '');
   const st = c ? c.status : 'IDEA';
   for (const r of dlg.querySelectorAll('input[name=status]')) r.checked = r.value === st;
@@ -573,6 +594,8 @@ function openCard(id, date) {
   dlg.showModal();
   $('#f-type').focus();
 }
+function syncTypeSwatch() { const sw = $('#f-type-sw'); sw.style.background = tintCss($('#f-type').value) || 'var(--cell)'; }
+$('#f-type').addEventListener('change', syncTypeSwatch);
 $('#f-nodate').addEventListener('click', () => { $('#f-date').value = ''; });
 $('#cd-cancel').addEventListener('click', () => $('#card-dialog').close());
 $('#card-form').addEventListener('submit', async e => {
@@ -634,24 +657,41 @@ $('#cf-cancel').addEventListener('click', () => $('#confirm-dialog').close());
 $('#cf-ok').addEventListener('click', () => { const f = confirmAction; confirmAction = null; $('#confirm-dialog').close(); if (f) f(); });
 
 /* ---------- lists dialog ---------- */
-function listRow(value, container) {
+function listRow(value, container, tint) {
   const row = el('div', { class: 'item' });
   const inp = el('input', { type: 'text', value, 'aria-label': 'Entry', maxlength: '80' });
+  row.append(inp);
+  if (tint !== undefined) {
+    const sw = el('span', { class: 'sw', 'aria-hidden': 'true' });
+    const sel = el('select', { 'aria-label': `Tint for ${value}` });
+    for (const [k, name] of TINTS) sel.append(el('option', { value: k, text: name }));
+    sel.value = TINT_KEYS.includes(tint) ? tint : TINT_KEYS[0];
+    const paint = () => { sw.style.background = `var(--t-${sel.value})`; };
+    sel.addEventListener('change', paint); paint();
+    row.append(sw, sel);
+  }
   const rm = el('button', { class: 'btn btn-quiet btn-sm', type: 'button', text: 'Remove', 'aria-label': `Remove ${value}`, onclick: () => row.remove() });
-  row.append(inp, rm); container.append(row);
+  row.append(rm); container.append(row);
 }
-function newRow(container, placeholder) {
+function nextTint(container) {
+  const used = [...container.querySelectorAll('.item:not(.new) select')].map(s => s.value);
+  return TINT_KEYS.find(k => !used.includes(k)) || TINT_KEYS[used.length % TINT_KEYS.length];
+}
+function newRow(container, placeholder, withTint) {
   const row = el('div', { class: 'item new' });
   const inp = el('input', { type: 'text', placeholder, 'aria-label': placeholder, maxlength: '80' });
-  const add = () => { const v = inp.value.trim(); if (!v) return; listRow(v, container); container.append(row); inp.value = ''; inp.focus(); };
+  const add = () => { const v = inp.value.trim(); if (!v) return; listRow(v, container, withTint ? nextTint(container) : undefined); container.append(row); inp.value = ''; inp.focus(); };
   inp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); add(); } });
   row.append(inp, el('button', { class: 'btn btn-sm', type: 'button', text: 'Add', onclick: add }));
   container.append(row);
 }
 function readList(container) {
-  const out = [];
-  for (const i of container.querySelectorAll('.item:not(.new) input')) { const v = i.value.trim(); if (v && !out.includes(v)) out.push(v); }
-  return out;
+  const out = [], colors = {};
+  for (const r of container.querySelectorAll('.item:not(.new)')) {
+    const v = r.querySelector('input').value.trim(); if (!v || out.includes(v)) continue;
+    out.push(v); const sel = r.querySelector('select'); if (sel) colors[v] = sel.value;
+  }
+  return { items: out, colors };
 }
 function renderArchived() {
   const box = $('#l-archived'); box.innerHTML = '';
@@ -673,22 +713,22 @@ function renderArchived() {
 }
 function openLists() {
   const t = $('#l-types'), o = $('#l-owners'); t.innerHTML = ''; o.innerHTML = '';
-  for (const v of state.lists.types) listRow(v, t); newRow(t, 'New format');
+  for (const v of state.lists.types) listRow(v, t, tintOf(v) || ''); newRow(t, 'New format', true);
   for (const v of state.lists.owners) listRow(v, o); newRow(o, 'New owner');
   renderArchived();
   $('#ld-err').hidden = true;
   const ro = state.readOnly;
-  for (const x of $('#lists-dialog').querySelectorAll('input,#ld-save,.list button')) x.disabled = ro;
+  for (const x of $('#lists-dialog').querySelectorAll('input,select,#ld-save,.list button')) x.disabled = ro;
   $('#lists-dialog').showModal();
 }
 $('#btn-lists').addEventListener('click', openLists);
 $('#ld-cancel').addEventListener('click', () => $('#lists-dialog').close());
 $('#lists-form').addEventListener('submit', async e => {
   e.preventDefault();
-  const types = readList($('#l-types')), owners = readList($('#l-owners'));
-  if (!types.length || !owners.length) { const er = $('#ld-err'); er.textContent = 'Keep at least one format and one owner.'; er.hidden = false; return; }
+  const t = readList($('#l-types')), o = readList($('#l-owners'));
+  if (!t.items.length || !o.items.length) { const er = $('#ld-err'); er.textContent = 'Keep at least one format and one owner.'; er.hidden = false; return; }
   $('#lists-dialog').close();
-  if (await saveLists({ types, owners })) toast('Lists saved.');
+  if (await saveLists({ types: t.items, owners: o.items, typeColors: t.colors })) toast('Lists saved.');
 });
 
 /* ---------- window controls ---------- */
@@ -793,7 +833,9 @@ function subscribe() {
   }, e => { clearTimeout(timer); setSync('error'); notice(explainError(e), false, [['Reload', () => location.reload()]]); });
   state.db.doc('settings/lists').onSnapshot(s => {
     const d = s.exists ? s.data() : {};
-    state.lists = { types: Array.isArray(d.types) ? d.types.filter(x => typeof x === 'string') : [], owners: Array.isArray(d.owners) ? d.owners.filter(x => typeof x === 'string') : [] };
+    const tc = {};
+    if (d.typeColors && typeof d.typeColors === 'object') for (const [k, v] of Object.entries(d.typeColors)) if (typeof k === 'string' && TINT_KEYS.includes(v)) tc[k] = v;
+    state.lists = { types: Array.isArray(d.types) ? d.types.filter(x => typeof x === 'string') : [], owners: Array.isArray(d.owners) ? d.owners.filter(x => typeof x === 'string') : [], typeColors: tc };
     state.listsLoaded = true;
     if (s.exists === false && !s.metadata.fromCache && !state.readOnly) notice('The type and owner lists are empty. Add them under Edit lists before creating cards.', true, [['Edit lists', openLists]]);
     else if (!state.readOnly) notice(null);

@@ -10,7 +10,8 @@ Live board: https://claude.ai/artifact/8NxAys2UYehk6Pm5b5PKCg
 - Rolling calendar, Monday to Sunday, the current week plus the next five.
   "4 earlier weeks" scrolls back into the past, "4 later weeks" extends forward.
 - Each card holds a Type (which show), an Owner, a Status and an optional note.
-  Status is the card's colour: Idea (grey), WIP (yellow), Review (violet), Scheduled (green).
+  The card's fill is its type's tint (chosen per type under "Edit lists"). The strip on the
+  card's left edge is its status: Idea (grey), WIP (yellow), Review (violet), Scheduled (green).
   Click the status to move one step forward, Shift+click to move back.
 - Cards drag between days and the Backlog. On touch screens, drag from the dotted grip
   on the card's left edge; tapping the card body opens it for editing.
@@ -26,7 +27,7 @@ The page is published as a claude.ai artifact and uses its shared database (`db`
 Data model:
 
 - `cards/<id>`: `{type, owner, status, note, date | null, order, archived, createdAt, updatedAt}`
-- `settings/lists`: `{types: [...], owners: [...]}`
+- `settings/lists`: `{types: [...], owners: [...], typeColors: {type: tintKey}}`
 
 Writes are last-writer-wins per card. Every open browser receives changes live.
 Nothing is kept in localStorage.
