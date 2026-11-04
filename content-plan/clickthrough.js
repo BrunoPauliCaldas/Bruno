@@ -65,6 +65,36 @@ const ok = (name, cond, extra='') => { log.push(`${cond ? 'PASS' : 'FAIL'} ${nam
   await page.click('#cf-ok'); await page.waitForTimeout(200);
   ok('stamp adds 4 cards in week 2', await page.locator('.week').nth(1).locator('.card').count() === 4);
   ok('stamped cards are IDEA', await page.locator('.week').nth(1).locator('.card.s-IDEA').count() === 4);
+  // rubber-band selection across week 2, then group moves
+  {
+    const w2 = page.locator('.week').nth(1);
+    const mon = await w2.locator('.day').first().boundingBox(), sun = await w2.locator('.day').last().boundingBox();
+    await page.mouse.move(mon.x + 20, mon.y + 60); await page.mouse.down();
+    await page.mouse.move(sun.x + sun.width - 10, sun.y + sun.height - 10, { steps: 8 });
+    ok('marquee visible while dragging', await page.locator('.marquee').count() === 1);
+    await page.mouse.up(); await page.waitForTimeout(50);
+    ok('marquee selected the 4 stamped cards', await page.locator('.card.selected').count() === 4 && !(await page.locator('#selbar').evaluate(b => b.hidden)));
+    await page.keyboard.press('ArrowDown'); await page.waitForTimeout(100);
+    ok('ArrowDown shifts the group one week', await page.locator('.week').nth(2).locator('.card').count() === 4 && await w2.locator('.card').count() === 0);
+    ok('selection survives the move', await page.locator('.card.selected').count() === 4);
+    const w3 = page.locator('.week').nth(2);
+    const first = w3.locator('.card').first(); const fromDate = await first.evaluate(c => c.closest('.day').dataset.date);
+    const fb = await first.boundingBox(); const target = await w3.locator('.day').nth(5).locator('.cards').boundingBox();
+    await page.mouse.move(fb.x + 60, fb.y + 12); await page.mouse.down(); await page.mouse.move(fb.x + 70, fb.y + 30, { steps: 3 });
+    await page.mouse.move(target.x + 40, target.y + 20, { steps: 8 });
+    ok('group ghost shows a count', (await page.locator('.ghost .count').textContent()) === '\u00d74');
+    await page.mouse.up(); await page.waitForTimeout(150);
+    const dates = await page.locator('#weeks .card').evaluateAll(cs => cs.map(c => c.closest('.day').dataset.date).sort());
+    const shift = Math.round((Date.parse(dates[0]) - Date.parse(fromDate)) / 86400000);
+    ok('dragging one selected card moves all by the same offset', dates.length === 4 && shift === 4, `(shift ${shift})`);
+    await page.keyboard.press('ArrowLeft'); await page.keyboard.press('ArrowLeft'); await page.keyboard.press('ArrowLeft'); await page.keyboard.press('ArrowLeft'); await page.keyboard.press('ArrowUp'); await page.waitForTimeout(150);
+    ok('arrow keys bring the group back', await w2.locator('.card').count() === 4);
+    await page.keyboard.press('Escape');
+    ok('Escape clears the selection', await page.locator('.card.selected').count() === 0 && await page.locator('#selbar').evaluate(b => b.hidden));
+    await page.click('.week >> nth=1 >> .card >> nth=0 >> .card-main', { modifiers: ['Shift'] });
+    ok('Shift+click selects a card without opening it', await page.locator('.card.selected').count() === 1 && !(await page.locator('#card-dialog').evaluate(d => d.open)));
+    await page.keyboard.press('Escape');
+  }
   // lists dialog: add owner
   await viaMenu('#btn-lists');
   ok('type rows have a tint select', await page.locator('#l-types .item:not(.new) select').count() === 10);

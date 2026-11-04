@@ -117,6 +117,13 @@ button,input,select,textarea{font:inherit;color:inherit}
 .card .note{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;font-size:12px;color:var(--ink);margin-top:3px;overflow-wrap:anywhere}
 @media (pointer:coarse){.card{grid-template-columns:30px minmax(0,1fr)}.card .status{min-height:30px;padding-inline:9px}}
 .ghost{position:fixed;z-index:50;pointer-events:none;box-shadow:var(--ghost-shadow);opacity:.96;transform:rotate(-1deg)}
+.ghost .count{position:absolute;top:-9px;right:-9px;min-width:22px;height:22px;border-radius:999px;background:var(--ink);color:var(--paper);font-size:10.5px;display:flex;align-items:center;justify-content:center;padding:0 7px}
+.card.selected{box-shadow:0 0 0 2px var(--ink)}
+.marquee{position:fixed;z-index:40;border:1.5px dashed var(--ink);background:rgba(17,17,17,.06);pointer-events:none}
+body.marquee-on{user-select:none;-webkit-user-select:none;cursor:crosshair}
+.selbar{position:fixed;left:max(16px,env(safe-area-inset-left,0px));bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:55;background:var(--paper);color:var(--ink);
+  border:1.5px solid var(--ink);border-radius:var(--r);padding:8px 8px 8px 14px;display:flex;gap:12px;align-items:center;font-size:12.5px;max-width:calc(100vw - 32px)}
+.selbar[hidden]{display:none}
 .sw.t{border:1px solid var(--rule)}
 
 /* Backlog */
@@ -318,6 +325,7 @@ hr{border:0;border-top:1px solid var(--rule);margin:4px 0}
   </div>
 </dialog>
 
+<div class="selbar" id="selbar" role="status" hidden><span id="selbar-text"></span><button class="btn btn-sm" type="button" id="selbar-clear">Clear</button></div>
 <div class="toast" id="toast" role="status" aria-live="polite" hidden><span id="toast-text"></span><button type="button" id="toast-action" hidden></button></div>
 
 <script>
@@ -500,6 +508,7 @@ function groupCards() {
 function cardEl(c) {
   const a = el('article', { class: 'card s-' + c.status, 'data-id': c.id });
   const tint = tintCss(c.type); if (tint) a.style.setProperty('--tint', tint);
+  if (selected.has(c.id)) a.classList.add('selected');
   a.append(el('span', { class: 'grip', 'aria-hidden': 'true', title: 'Drag to move' }));
   const main = el('button', { class: 'card-main', type: 'button', 'aria-label': `Edit card: ${c.type || 'untitled'}, ${c.owner || 'no owner'}, ${STATUS_LABEL[c.status] || c.status}` });
   main.append(el('span', { class: 'type', text: c.type || '(no type)' }));
@@ -554,6 +563,8 @@ function render() {
   if (!bl.length) lane.append(el('div', { class: 'empty', text: state.cardsLoaded ? 'Nothing waiting. Ideas without a day land here.' : 'Loading the board…' }));
   for (const c of bl) lane.append(cardEl(c));
   $('#btn-add-backlog').hidden = state.readOnly;
+  for (const id of [...selected]) { const c = state.cards.get(id); if (!c || c.archived) selected.delete(id); }
+  syncSelection();
   if (state.readOnly) notice('You can view this board but not change it. Ask the board owner for contributor access.', true);
 }
 
@@ -630,7 +641,65 @@ document.addEventListener('click', e => {
     return;
   }
   const main = e.target.closest('.card .card-main');
-  if (main) openCard(main.closest('.card').dataset.id);
+  if (main) {
+    const id = main.closest('.card').dataset.id;
+    if (e.shiftKey) { if (selected.has(id)) selected.delete(id); else selected.add(id); syncSelection(); return; }
+    openCard(id);
+  }
+});
+
+/* ---------- multi-select: rubber band with the mouse, shift+click, arrow keys ---------- */
+const selected = new Set();
+function syncSelection() {
+  for (const n of document.querySelectorAll('.card')) n.classList.toggle('selected', selected.has(n.dataset.id));
+  const bar = $('#selbar');
+  if (!selected.size) { bar.hidden = true; return; }
+  $('#selbar-text').textContent = `${selected.size} card${selected.size > 1 ? 's' : ''} selected. Drag one to move them all, or use the arrow keys: up and down shift a week, left and right a day.`;
+  bar.hidden = false;
+}
+function clearSelection() { selected.clear(); syncSelection(); }
+$('#selbar-clear').addEventListener('click', clearSelection);
+let box = null;
+const overlap = (a, b) => a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+document.addEventListener('pointerdown', e => {
+  if (e.pointerType !== 'mouse' || e.button !== 0 || state.readOnly) return;
+  if (e.target.closest('.card,button,summary,a,input,select,textarea,dialog,.gutter')) return;
+  if (!e.target.closest('.day,.lane')) return;
+  box = { x0: e.clientX, y0: e.clientY, active: false, el: null, base: e.shiftKey ? new Set(selected) : new Set() };
+  e.preventDefault();
+});
+document.addEventListener('pointermove', e => {
+  if (!box) return;
+  if (!box.active) {
+    if (Math.hypot(e.clientX - box.x0, e.clientY - box.y0) < 6) return;
+    box.active = true; box.el = el('div', { class: 'marquee' }); document.body.append(box.el); document.body.classList.add('marquee-on');
+  }
+  const r = { left: Math.min(box.x0, e.clientX), top: Math.min(box.y0, e.clientY), right: Math.max(box.x0, e.clientX), bottom: Math.max(box.y0, e.clientY) };
+  Object.assign(box.el.style, { left: r.left + 'px', top: r.top + 'px', width: (r.right - r.left) + 'px', height: (r.bottom - r.top) + 'px' });
+  const ids = new Set(box.base);
+  for (const n of document.querySelectorAll('.card')) {
+    const cr = n.getBoundingClientRect(), pr = n.closest('.cards,.lane').getBoundingClientRect();
+    const vis = { left: Math.max(cr.left, pr.left), top: Math.max(cr.top, pr.top), right: Math.min(cr.right, pr.right), bottom: Math.min(cr.bottom, pr.bottom) };
+    if (vis.right > vis.left && vis.bottom > vis.top && overlap(r, vis)) ids.add(n.dataset.id);
+  }
+  selected.clear(); for (const id of ids) selected.add(id); syncSelection();
+});
+function endBox(e) {
+  if (!box) return;
+  if (box.active) { box.el.remove(); document.body.classList.remove('marquee-on'); }
+  else if (!e.shiftKey) clearSelection();
+  box = null;
+}
+document.addEventListener('pointerup', endBox);
+document.addEventListener('pointercancel', endBox);
+document.addEventListener('keydown', e => {
+  if (!selected.size || document.querySelector('dialog[open]') || e.target.closest('input,textarea,select')) return;
+  if (e.key === 'Escape') { clearSelection(); return; }
+  const step = { ArrowUp: -7, ArrowDown: 7, ArrowLeft: -1, ArrowRight: 1 }[e.key];
+  if (step === undefined) return;
+  e.preventDefault(); if (state.readOnly) return;
+  let n = 0;
+  for (const id of selected) { const c = state.cards.get(id); if (!c || !c.date) continue; updateCard(id, { date: addDays(c.date, step), order: Date.now() + n++ }); }
 });
 
 /* ---------- stamp ---------- */
@@ -758,8 +827,10 @@ function startDrag() {
   drag.active = true;
   const r = drag.el.getBoundingClientRect();
   drag.dx = drag.x0 - r.left; drag.dy = drag.y0 - r.top;
+  if (!selected.has(drag.id)) clearSelection();
   const g = drag.el.cloneNode(true); g.classList.add('ghost'); g.classList.remove('dragging');
   g.style.width = r.width + 'px'; g.style.left = r.left + 'px'; g.style.top = r.top + 'px';
+  if (selected.size > 1) g.append(el('span', { class: 'count', text: '\u00d7' + selected.size }));
   document.body.append(g); drag.ghost = g;
   drag.el.classList.add('dragging');
   document.body.style.cursor = 'grabbing';
@@ -789,7 +860,19 @@ function endDrag(commit) {
   const id = drag.id, c = state.cards.get(id);
   if (zone && c) {
     const date = zone.dataset.drop === 'backlog' ? null : zone.dataset.date;
-    if (date !== (c.date || null)) updateCard(id, { date, order: Date.now() });
+    const group = selected.has(id) && selected.size > 1 ? [...selected] : [id];
+    if (group.length === 1) { if (date !== (c.date || null)) updateCard(id, { date, order: Date.now() }); }
+    else {
+      // Shift every selected card by the same number of days the dragged card moved; undated cards land on the target day.
+      const delta = date && c.date ? Math.round((toUTC(date) - toUTC(c.date)) / 86400000) : null;
+      let n = 0, moved = 0;
+      for (const gid of group) {
+        const g = state.cards.get(gid); if (!g) continue;
+        const nd = !date ? null : (delta !== null && g.date ? addDays(g.date, delta) : date);
+        if (nd !== (g.date || null)) { updateCard(gid, { date: nd, order: Date.now() + n++ }); moved++; }
+      }
+      if (moved) toast(`Moved ${moved} cards.`);
+    }
   }
   if (state.renderQueued) { state.renderQueued = false; render(); }
 }
