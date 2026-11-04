@@ -1,4 +1,4 @@
-# OMNI TONE Content Plan
+# OMNI TONE Content Planner
 
 A shared Instagram content-planning calendar for the OMNI TONE social team.
 One page, no accounts: everyone with access to the link works on the same board.
