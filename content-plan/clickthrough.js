@@ -22,7 +22,7 @@ const ok = (name, cond, extra='') => { log.push(`${cond ? 'PASS' : 'FAIL'} ${nam
   await page.fill('#f-note', 'test note'); await page.click('#cd-save'); await page.waitForTimeout(100);
   ok('card appears on today', await page.locator(`.day[data-date="${today}"] .card`).count() === 1);
   ok('card is IDEA grey', await page.locator(`.day[data-date="${today}"] .card.s-IDEA`).count() === 1);
-  ok('card fill follows type tint', (await page.locator(`.day[data-date="${today}"] .card`).evaluate(c => c.style.getPropertyValue('--tint'))) === 'var(--t-apricot)');
+  ok('card fill follows type tint', (await page.locator(`.day[data-date="${today}"] .card`).evaluate(c => c.style.getPropertyValue('--tint'))) === 'var(--t-pink)');
   ok('status strip colour from status', (await page.locator(`.day[data-date="${today}"] .card .grip`).evaluate(g => getComputedStyle(g).backgroundColor)) === 'rgb(168, 168, 168)');
   // cycle status
   await page.click(`.day[data-date="${today}"] .card .status`); await page.waitForTimeout(80);
@@ -67,13 +67,13 @@ const ok = (name, cond, extra='') => { log.push(`${cond ? 'PASS' : 'FAIL'} ${nam
   // lists dialog: add owner
   await page.click('#btn-lists');
   ok('type rows have a tint select', await page.locator('#l-types .item:not(.new) select').count() === 10);
-  await page.selectOption('#l-types .item:not(.new) select >> nth=1', 'sky');
+  await page.selectOption('#l-types .item:not(.new) select >> nth=1', 'blue');
   await page.fill('#l-owners .item.new input', 'Till'); await page.keyboard.press('Enter');
   await page.click('#ld-save'); await page.waitForTimeout(100);
   await page.click('#btn-add-backlog');
   ok('new owner available on cards', (await page.locator('#f-owner option').allTextContents()).includes('Till'));
   await page.selectOption('#f-type', 'Sensory reel');
-  ok('changed tint shows in editor swatch', (await page.locator('#f-type-sw').evaluate(e => e.style.background)) === 'var(--t-sky)');
+  ok('changed tint shows in editor swatch', (await page.locator('#f-type-sw').evaluate(e => e.style.background)) === 'var(--t-blue)');
   await page.click('#cd-cancel');
   // archive + undo
   await page.click('#backlog .card .card-main'); await page.click('#cd-archive'); await page.waitForTimeout(80);

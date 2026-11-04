@@ -11,9 +11,10 @@
 :root{
   --paper:#FFFFFF; --cell:#FFFFFF; --past:#F5F5F5; --ink:#111111; --ink-2:#6E6E6E; --ink-3:#AAAAAA;
   --rule:#E0E0E0; --rule-2:#111111; --accent:#111111; --accent-ink:#FFFFFF;
-  --st-idea:#A8A8A8; --st-wip:#E9C21A; --st-review:#9B7BD0; --st-sched:#3FA254;
-  --t-rose:#F0D6D3; --t-apricot:#F5DEC6; --t-straw:#EFE6B8; --t-sage:#D9E3CD; --t-mint:#CFE5DB;
-  --t-sky:#D2E0EA; --t-lilac:#DED6EB; --t-mauve:#E8D4E2; --t-sand:#E9E1D3; --t-stone:#E2E3E0;
+  /* Brand colours: Lavender #A785FE, Pink Pearl #EAA9CB, Booger Buster #D5EF72, GO Green #00B65C,
+     Red (RYB) #F8311C, United Nations Blue #537CDE. Strips use them at full strength; card fills at a 45% tint. */
+  --st-idea:#A8A8A8; --st-wip:#D5EF72; --st-review:#A785FE; --st-sched:#00B65C;
+  --t-lavender:#D7C8FF; --t-pink:#F6D8E8; --t-booger:#ECF8C0; --t-green:#8CDEB6; --t-red:#FCA299; --t-blue:#B2C4F0; --t-paper:#EFECE6;
   --drop:#F0F0F0; --ghost-shadow:0 10px 24px rgba(17,17,17,.16);
   --font:"OMNI TONE Grotesk","Helvetica Neue",Helvetica,Arial,sans-serif;
   --r:6px; --rc:4px;
@@ -108,7 +109,7 @@ button,input,select,textarea{font:inherit;color:inherit}
   text-transform:uppercase;line-height:1.5;cursor:pointer;min-height:22px;display:inline-flex;align-items:center}
 .card .status:hover{background:var(--ink);color:var(--paper)}
 .card .status::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--st);margin-right:5px}
-.card .note{display:block;font-size:12px;color:var(--ink-2);margin-top:3px;overflow-wrap:anywhere}
+.card .note{display:block;font-size:12px;color:var(--ink);margin-top:3px;overflow-wrap:anywhere}
 @media (pointer:coarse){.card{grid-template-columns:30px minmax(0,1fr)}.card .status{min-height:30px;padding-inline:9px}}
 .ghost{position:fixed;z-index:50;pointer-events:none;box-shadow:var(--ghost-shadow);opacity:.96;transform:rotate(-1deg)}
 .sw.t{border:1px solid var(--rule)}
@@ -153,7 +154,7 @@ fieldset{border:0;padding:0;margin:0}
 .list .item{display:flex;gap:6px;align-items:center}
 .list .item input{flex:1;min-width:0;min-height:38px;padding:6px 10px;border:1px solid var(--rule);border-radius:var(--r);background:var(--paper)}
 .list .item.new input{border:1.5px solid var(--ink)}
-.list .item select{min-height:38px;padding:4px 6px;border:1px solid var(--rule);border-radius:var(--r);background:var(--paper);max-width:7.5em}
+.list .item select{min-height:38px;padding:4px 6px;border:1px solid var(--rule);border-radius:var(--r);background:var(--paper);max-width:9.5em}
 .list .item .sw{width:22px;height:22px;border:1px solid var(--rule);border-radius:var(--rc);flex:none}
 .arch{display:flex;flex-direction:column;gap:6px}
 .arch .item{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;font-size:13px;padding:8px 0;border-top:1px solid var(--rule)}
@@ -332,16 +333,16 @@ const STAMP_FIXED = [
 const STAMP_EVEN = { type: 'CTA post + The Record', owner: 'Bruno', day: 4 };
 const STAMP_ODD = { type: 'Process reel (Michael)', owner: 'Michael', day: 4 };
 // Used only by the local preview (file:// or localhost); the live board reads its lists from the store.
-const TINTS = [['rose', 'Rose'], ['apricot', 'Apricot'], ['straw', 'Straw'], ['sage', 'Sage'], ['mint', 'Mint'],
-  ['sky', 'Sky'], ['lilac', 'Lilac'], ['mauve', 'Mauve'], ['sand', 'Sand'], ['stone', 'Stone']];
+const TINTS = [['lavender', 'Lavender'], ['pink', 'Pink Pearl'], ['booger', 'Booger Buster'], ['green', 'GO Green'],
+  ['red', 'Red (RYB)'], ['blue', 'United Nations Blue'], ['paper', 'Paper']];
 const TINT_KEYS = TINTS.map(t => t[0]);
 const PREVIEW_LISTS = {
   types: ['In Search of What Lasts (hero reel)', 'Sensory reel', 'Explainer reel', 'Process carousel', 'Process reel (Michael)',
     'Story post (Brand Philosophy)', 'CTA post + The Record', 'Playlist post', 'Field Testing / World piece', 'BTS reel'],
   owners: ['Anouk', 'Bruno', 'Michael'],
-  typeColors: { 'In Search of What Lasts (hero reel)': 'rose', 'Sensory reel': 'apricot', 'Explainer reel': 'sky', 'Process carousel': 'sage',
-    'Process reel (Michael)': 'mint', 'Story post (Brand Philosophy)': 'straw', 'CTA post + The Record': 'lilac', 'Playlist post': 'mauve',
-    'Field Testing / World piece': 'sand', 'BTS reel': 'stone' },
+  typeColors: { 'In Search of What Lasts (hero reel)': 'lavender', 'Sensory reel': 'pink', 'Explainer reel': 'blue', 'Process carousel': 'green',
+    'Process reel (Michael)': 'green', 'Story post (Brand Philosophy)': 'lavender', 'CTA post + The Record': 'red', 'Playlist post': 'pink',
+    'Field Testing / World piece': 'booger', 'BTS reel': 'paper' },
 };
 const tintOf = type => { const k = state.lists.typeColors[type]; return TINT_KEYS.includes(k) ? k : null; };
 // The stamp set is written once; the team may respell a type later ("Sensory Reel"). Match ignoring case and spaces.
