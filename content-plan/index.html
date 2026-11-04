@@ -36,8 +36,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .top{display:flex;flex-wrap:wrap;align-items:flex-end;gap:16px 32px;padding-block:26px 18px;border-bottom:1.5px solid var(--rule-2)}
 .brand h1{font-size:28px;line-height:1;letter-spacing:.005em;text-transform:uppercase;display:flex;flex-wrap:wrap;align-items:baseline;gap:0 14px}
 .brand h1 .mark{font-size:30px}
-.brand h1 .what{font-size:17px;letter-spacing:.02em}
-.brand .sub{color:var(--ink-2);margin-top:6px;font-size:17px;letter-spacing:.01em}
+.brand h1 .what{font-size:17px;letter-spacing:.01em;text-transform:none;color:var(--ink-2)}
 .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-left:auto}
 .sync{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);padding-inline:6px;min-width:5em}
 .sync.bad{color:var(--ink)}
@@ -196,8 +195,7 @@ hr{border:0;border-top:1px solid var(--rule);margin:4px 0}
 <div class="app">
   <header class="top">
     <div class="brand">
-      <h1><span class="mark">OMNI TONE</span></h1>
-      <p class="sub">Content planner</p>
+      <h1><span class="mark">OMNI TONE</span><span class="what">Content planner</span></h1>
     </div>
     <div class="toolbar">
       <button class="btn btn-sm" id="btn-earlier" type="button">4 earlier weeks</button>
