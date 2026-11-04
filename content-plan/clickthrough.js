@@ -1,6 +1,6 @@
 const { chromium } = require('playwright');
 const SHOTS = require('path').join(require('os').tmpdir(), 'content-plan-shots') + '/'; require('fs').mkdirSync(SHOTS, { recursive: true });
-const URL = 'file://' + require('path').resolve(__dirname, 'index.html');
+const URL = 'file://' + require('path').resolve(process.argv[2] || require('path').join(__dirname, 'index.html'));
 const log = [];
 const ok = (name, cond, extra='') => { log.push(`${cond ? 'PASS' : 'FAIL'} ${name}${extra ? ' ' + extra : ''}`); if (!cond) process.exitCode = 1; };
 (async () => {
@@ -23,7 +23,7 @@ const ok = (name, cond, extra='') => { log.push(`${cond ? 'PASS' : 'FAIL'} ${nam
   ok('card appears on today', await page.locator(`.day[data-date="${today}"] .card`).count() === 1);
   ok('card is IDEA grey', await page.locator(`.day[data-date="${today}"] .card.s-IDEA`).count() === 1);
   ok('card fill follows type tint', (await page.locator(`.day[data-date="${today}"] .card`).evaluate(c => c.style.getPropertyValue('--tint'))) === 'var(--t-apricot)');
-  ok('status strip colour from status', (await page.locator(`.day[data-date="${today}"] .card .grip`).evaluate(g => getComputedStyle(g).backgroundColor)) === 'rgb(154, 158, 151)');
+  ok('status strip colour from status', (await page.locator(`.day[data-date="${today}"] .card .grip`).evaluate(g => getComputedStyle(g).backgroundColor)) === 'rgb(168, 168, 168)');
   // cycle status
   await page.click(`.day[data-date="${today}"] .card .status`); await page.waitForTimeout(80);
   ok('status click -> WIP', await page.locator(`.day[data-date="${today}"] .card.s-WIP`).count() === 1);

@@ -1,0 +1,6 @@
+# Brand font: licensed to OMNI TONE GmbH, not for redistribution
+*.woff2
+*.woff
+*.otf
+# Built page with the font inlined
+dist/

@@ -2,8 +2,7 @@
 
 A shared Instagram content-planning calendar for the OMNI TONE social team.
 One page, no accounts: everyone with access to the link works on the same board.
-
-Live board: https://claude.ai/artifact/8NxAys2UYehk6Pm5b5PKCg
+The board link is the access key, so it is not written down here.
 
 ## What it does
 
@@ -35,10 +34,21 @@ Nothing is kept in localStorage.
 Access: viewers must be signed in to claude.ai and have been given access to the artifact from its
 Share menu. Contributor or Editor access is needed to change cards; Viewer access is read-only.
 
+## Brand font and build
+
+The page is set in OMNI TONE Grotesk Medium, licensed to OMNI TONE GmbH. The font file is not
+committed (see `.gitignore`). To build the page for publishing, place `OMNITONEGrotesk-Medium.woff2`
+next to `index.html` and run:
+
+    python3 build.py dist/index.html
+
+`build.py` inlines the font as a data URI; publish the file it writes. Without the font file the page
+falls back to Helvetica Neue / Arial.
+
 ## Local preview
 
-Open `index.html` directly from disk (file://) or on localhost. Without the artifact runtime the
+Open `index.html` (or the built copy) directly from disk (file://) or on localhost. Without the artifact runtime the
 page runs against an in-memory store and shows "Local preview": nothing is saved.
-`clickthrough.js` in this folder drives every control in a headless browser.
+`clickthrough.js` in this folder drives every control in a headless browser; pass a file path to test a built copy.
 
 Times are computed in Europe/Zurich; weeks start on Monday.
