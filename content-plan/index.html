@@ -1,0 +1,820 @@
+<title>OMNI TONE Content Plan</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:ital,wght@0,400;0,500;1,400&display=swap">
+<style>
+/* Layout: a wall planner. A narrow left gutter carries the week number in serif; seven hairline-ruled
+   day columns follow; a heavy rule sits above every week. Cards are flat colour blocks keyed to status.
+   Colour: cool paper, one red accent (today, focus), four status fills that read apart in both themes.
+   Type: IBM Plex Sans for the working text (tabular figures), IBM Plex Serif for the few printed labels. */
+:root{
+  --paper:#F5F5F2; --cell:#FBFBF9; --past:#EDEEEA; --ink:#1A1B19; --ink-2:#585B55;
+  --rule:#D3D5CF; --rule-2:#1A1B19; --accent:#C62E22; --accent-ink:#FFFFFF;
+  --s-idea:#E3E5E0; --s-wip:#F3DF72; --s-review:#D6C3EC; --s-sched:#B4DDA7;
+  --drop:#FFF4D6; --ghost-shadow:0 8px 20px rgba(26,27,25,.18);
+  --font:"IBM Plex Sans","Helvetica Neue",Arial,sans-serif;
+  --serif:"IBM Plex Serif",Georgia,"Times New Roman",serif;
+  --r:2px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#161715; --cell:#1C1D1A; --past:#121311; --ink:#ECEDE8; --ink-2:#A6A9A1;
+    --rule:#34362F; --rule-2:#ECEDE8; --accent:#F26A5C; --accent-ink:#161715;
+    --s-idea:#3B3E39; --s-wip:#6E5C0E; --s-review:#4F3B73; --s-sched:#2A5D2C;
+    --drop:#2E2A16; --ghost-shadow:0 8px 20px rgba(0,0,0,.5);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#161715; --cell:#1C1D1A; --past:#121311; --ink:#ECEDE8; --ink-2:#A6A9A1;
+  --rule:#34362F; --rule-2:#ECEDE8; --accent:#F26A5C; --accent-ink:#161715;
+  --s-idea:#3B3E39; --s-wip:#6E5C0E; --s-review:#4F3B73; --s-sched:#2A5D2C;
+  --drop:#2E2A16; --ghost-shadow:0 8px 20px rgba(0,0,0,.5);
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font);font-size:14px;line-height:1.4;
+  padding-block:0 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--paper)}
+h1,h2,h3{margin:0;font-weight:500;text-wrap:balance}
+p{margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.app{max-width:1480px;margin:0 auto}
+
+/* Header */
+.top{display:flex;flex-wrap:wrap;align-items:flex-end;gap:16px 32px;padding-block:28px 18px;border-bottom:2px solid var(--rule-2)}
+.brand h1{font-family:var(--serif);font-size:26px;line-height:1.1;letter-spacing:-.01em}
+.brand .sub{color:var(--ink-2);margin-top:6px;font-size:13px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;font-size:12.5px;color:var(--ink-2)}
+.legend .key{display:inline-flex;align-items:center;gap:6px;color:var(--ink)}
+.legend .sw{width:14px;height:14px;border-radius:var(--r);border:1px solid var(--rule);display:inline-block}
+.legend .hint{flex-basis:100%;font-size:12px}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-left:auto}
+.sync{font-size:12px;color:var(--ink-2);padding-inline:6px;min-width:5em}
+.sync.bad{color:var(--accent)}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:36px;padding:6px 12px;border:1px solid var(--ink);
+  border-radius:var(--r);background:var(--cell);color:var(--ink);cursor:pointer;line-height:1.2;text-align:center}
+.btn:hover{background:var(--past)}
+.btn-primary{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.btn-primary:hover{background:var(--ink-2);border-color:var(--ink-2)}
+.btn-quiet{border-color:transparent;background:transparent;color:var(--ink-2);min-height:32px;padding:4px 8px}
+.btn-quiet:hover{background:var(--past);color:var(--ink)}
+.btn-danger{border-color:var(--accent);color:var(--accent)}
+.btn-danger:hover{background:var(--accent);color:var(--accent-ink)}
+.btn-sm{min-height:30px;padding:3px 9px;font-size:12.5px}
+.btn:disabled{opacity:.5;cursor:default}
+@media (pointer:coarse){.btn,.btn-sm,.btn-quiet{min-height:44px}.btn-sm{padding-inline:12px}}
+
+/* Notices */
+.notice{margin-top:18px;padding:12px 14px;border:1px solid var(--rule);border-left:3px solid var(--accent);background:var(--cell);
+  display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between}
+.notice.calm{border-left-color:var(--rule-2)}
+.notice[hidden]{display:none}
+
+/* Calendar grid */
+.cal{margin-top:22px;border-bottom:1px solid var(--rule)}
+.cal-head{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:grid;grid-template-columns:60px repeat(7,minmax(0,1fr));
+  background:var(--paper);border-bottom:1px solid var(--rule)}
+.cal-head div{padding:8px 10px;font-size:12.5px;color:var(--ink-2);border-left:1px solid var(--rule)}
+.cal-head div:first-child{border-left:0}
+.cal-head .wk{font-family:var(--serif);font-style:italic;color:var(--ink-2)}
+.week{display:grid;grid-template-columns:60px repeat(7,minmax(0,1fr));border-top:2px solid var(--rule-2)}
+.week:first-child{border-top:0}
+.gutter{padding:10px 8px;display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.gutter .wn{font-family:var(--serif);font-size:22px;line-height:1;letter-spacing:-.02em}
+.gutter .wn small{display:block;font-family:var(--font);font-size:11px;color:var(--ink-2);margin-bottom:4px;font-style:normal}
+.gutter .range{display:none;color:var(--ink-2);font-size:13px}
+.day{border-left:1px solid var(--rule);background:var(--cell);min-height:132px;display:flex;flex-direction:column;min-width:0}
+.day.past{background:var(--past)}
+.day.drop{background:var(--drop)}
+.day-head{display:flex;align-items:baseline;gap:6px;padding:8px 10px 4px}
+.day-head .n{font-size:14px;font-weight:500;min-width:1.6em}
+.day.past .n{color:var(--ink-2)}
+.day-head .m{font-family:var(--serif);font-style:italic;font-size:13px;color:var(--ink-2)}
+.day.today .n{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;
+  background:var(--accent);color:var(--accent-ink);margin:-4px 0 -4px -4px}
+.cards{display:flex;flex-direction:column;gap:6px;padding:4px 8px;flex:1}
+.day .add{margin:2px 8px 8px;align-self:flex-start;font-size:12.5px}
+
+/* Cards */
+.card{position:relative;display:grid;grid-template-columns:22px minmax(0,1fr);grid-template-rows:1fr auto;border-radius:var(--r);background:var(--s-idea);
+  color:var(--ink);user-select:none;-webkit-user-select:none;min-height:44px}
+.card .grip{grid-row:1/3}
+.card .status{grid-column:2;justify-self:end;margin:0 6px 6px 0}
+.card.s-WIP{background:var(--s-wip)}.card.s-REVIEW{background:var(--s-review)}.card.s-SCHEDULED{background:var(--s-sched)}
+.card.dragging{opacity:.35}
+.grip{touch-action:none;cursor:grab;display:flex;align-items:center;justify-content:center;border-right:1px solid rgba(128,128,128,.25)}
+.grip::before{content:"";width:4px;height:18px;border-left:2px dotted currentColor;border-right:2px dotted currentColor;opacity:.55}
+.card-main{display:block;text-align:left;border:0;background:transparent;padding:6px 8px 4px 7px;cursor:pointer;border-radius:0 var(--r) var(--r) 0;min-width:0}
+.card-main:hover{background:rgba(128,128,128,.12)}
+.card .type{display:block;font-weight:500;font-size:13px;line-height:1.3;overflow-wrap:anywhere}
+.card .meta{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;margin-top:4px;font-size:12px}
+.card .status{border:1px solid currentColor;border-radius:var(--r);padding:1px 6px;background:transparent;font-size:11px;font-weight:600;
+  line-height:1.5;cursor:pointer;min-height:22px}
+.card .status:hover{background:rgba(128,128,128,.18)}
+.card .note{display:block;font-size:12px;color:inherit;opacity:.8;margin-top:3px;overflow-wrap:anywhere}
+@media (pointer:coarse){.card{grid-template-columns:30px minmax(0,1fr)}.card .status{min-height:30px;padding-inline:9px}}
+.ghost{position:fixed;z-index:50;pointer-events:none;box-shadow:var(--ghost-shadow);opacity:.95;transform:rotate(-1deg)}
+
+/* Backlog */
+.backlog{margin-top:32px}
+.backlog .bl-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 16px;padding-bottom:8px;border-bottom:2px solid var(--rule-2)}
+.backlog h2{font-family:var(--serif);font-size:20px}
+.backlog .bl-head p{color:var(--ink-2);font-size:13px}
+.lane{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;padding:12px 0 8px;min-height:72px;background:var(--cell);
+  border-bottom:1px solid var(--rule);padding-inline:8px}
+.lane.drop{background:var(--drop)}
+.lane .empty{grid-column:1/-1;color:var(--ink-2);font-size:13px;padding:14px 4px}
+.backlog .add{margin-top:10px}
+
+/* Dialogs */
+dialog{border:1px solid var(--rule-2);border-radius:var(--r);background:var(--cell);color:var(--ink);padding:0;width:min(92vw,520px);max-height:90vh}
+dialog::backdrop{background:rgba(20,20,18,.45)}
+.dlg{padding:20px 22px 18px;display:flex;flex-direction:column;gap:14px}
+.dlg h2{font-family:var(--serif);font-size:20px}
+.dlg .sub{color:var(--ink-2);font-size:13px;margin-top:-8px}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label,.field legend{font-size:12.5px;color:var(--ink-2)}
+.field input[type=text],.field input[type=date],.field select,.field textarea{min-height:40px;padding:7px 10px;border:1px solid var(--rule-2);
+  border-radius:var(--r);background:var(--paper);width:100%;max-width:100%}
+.field textarea{resize:vertical;min-height:64px}
+fieldset{border:0;padding:0;margin:0}
+.seg{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--ink);border-radius:var(--r);overflow:hidden}
+.seg label{position:relative;display:flex;align-items:center;justify-content:center;gap:6px;min-height:40px;cursor:pointer;font-size:13px;border-left:1px solid var(--ink)}
+.seg label:first-child{border-left:0}
+.seg input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.seg label .sw{width:12px;height:12px;border-radius:var(--r);border:1px solid var(--rule)}
+.seg input:checked+span{font-weight:600}
+.seg label:has(input:checked){background:var(--ink);color:var(--paper)}
+.seg input:focus-visible+span{outline:2px solid var(--accent);outline-offset:-4px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.row.end{justify-content:flex-end}
+.row .grow{flex:1}
+.err{color:var(--accent);font-size:13px}
+.err[hidden]{display:none}
+.list{display:flex;flex-direction:column;gap:6px}
+.list .item{display:flex;gap:6px;align-items:center}
+.list .item input{flex:1;min-width:0;min-height:38px;padding:6px 9px;border:1px solid var(--rule);border-radius:var(--r);background:var(--paper)}
+.list .item.new input{border-color:var(--rule-2)}
+.arch{display:flex;flex-direction:column;gap:6px}
+.arch .item{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;font-size:13px;padding:6px 0;border-top:1px solid var(--rule)}
+.arch .item .what{flex:1;min-width:12em}
+.arch .item .when{color:var(--ink-2);font-size:12px}
+.muted{color:var(--ink-2);font-size:12.5px}
+hr{border:0;border-top:1px solid var(--rule);margin:4px 0}
+
+/* Toast */
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:60;background:var(--ink);color:var(--paper);
+  padding:10px 14px;border-radius:var(--r);display:flex;gap:12px;align-items:center;max-width:calc(100vw - 32px);font-size:13.5px}
+.toast[hidden]{display:none}
+.toast button{background:transparent;border:1px solid var(--paper);color:var(--paper);border-radius:var(--r);padding:4px 10px;cursor:pointer;min-height:32px}
+
+/* Phone: agenda layout */
+@media (max-width:760px){
+  .top{padding-block:20px 14px}
+  .brand h1{font-size:22px}
+  .toolbar{margin-left:0}
+  .cal-head{display:none}
+  .week{display:block}
+  .gutter{flex-direction:row;align-items:center;justify-content:space-between;padding:10px 0}
+  .gutter .wn{font-size:18px;display:flex;align-items:baseline;gap:8px}
+  .gutter .wn small{display:inline;margin:0}
+  .gutter .range{display:inline}
+  .day{display:grid;grid-template-columns:62px minmax(0,1fr);border-left:0;border-top:1px solid var(--rule);min-height:52px}
+  .day-head{flex-direction:column;align-items:flex-start;gap:0;padding:8px 8px}
+  .day-head .d{font-size:11px;color:var(--ink-2)}
+  .day.today .n{margin:0 0 0 -3px}
+  .cards{padding:6px 8px 2px 0}
+  .day .add{grid-column:2;margin:0 0 6px 0}
+  .lane{grid-template-columns:1fr}
+}
+@media (min-width:761px){.day-head .d{display:none}}
+@media (hover:hover) and (pointer:fine){.day .add{opacity:0}.day:hover .add,.day:focus-within .add,.day.drop .add{opacity:1}}
+@media (prefers-reduced-motion:no-preference){.btn,.card-main,.day,.lane{transition:background-color .12s}}
+</style>
+
+<div class="app">
+  <header class="top">
+    <div class="brand">
+      <h1>OMNI TONE Content Plan</h1>
+      <p class="sub">Instagram planning board. Times in Europe/Zurich, weeks start on Monday.</p>
+    </div>
+    <div class="legend" aria-label="Status colours, in order">
+      <span class="key"><span class="sw" style="background:var(--s-idea)"></span>Idea</span>
+      <span class="key"><span class="sw" style="background:var(--s-wip)"></span>WIP</span>
+      <span class="key"><span class="sw" style="background:var(--s-review)"></span>Review</span>
+      <span class="key"><span class="sw" style="background:var(--s-sched)"></span>Scheduled</span>
+      <span class="hint">Click a card's status to move it one step forward. Shift+click moves it back.</span>
+    </div>
+    <div class="toolbar">
+      <button class="btn btn-sm" id="btn-earlier" type="button">4 earlier weeks</button>
+      <button class="btn btn-sm" id="btn-thisweek" type="button">This week</button>
+      <button class="btn btn-sm" id="btn-later" type="button">4 later weeks</button>
+      <button class="btn btn-sm" id="btn-lists" type="button">Edit lists</button>
+      <span class="sync" id="sync" role="status" aria-live="polite">Connecting…</span>
+    </div>
+  </header>
+
+  <div class="notice" id="notice" hidden><span id="notice-text"></span><span id="notice-actions"></span></div>
+
+  <main class="cal" id="calendar" aria-label="Calendar">
+    <div class="cal-head" aria-hidden="true">
+      <div class="wk">week</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div>
+    </div>
+    <div id="weeks"></div>
+  </main>
+
+  <section class="backlog" aria-labelledby="bl-title">
+    <div class="bl-head">
+      <h2 id="bl-title">Backlog</h2>
+      <p>Cards without a day yet. Drag one onto a day once it is planned.</p>
+    </div>
+    <div class="lane" id="backlog" data-drop="backlog"></div>
+    <button class="btn btn-sm add" id="btn-add-backlog" type="button">+ Add to backlog</button>
+  </section>
+</div>
+
+<dialog id="card-dialog" aria-labelledby="cd-title">
+  <form class="dlg" id="card-form" method="dialog" novalidate>
+    <h2 id="cd-title">New card</h2>
+    <p class="sub" id="cd-sub"></p>
+    <div class="field">
+      <label for="f-type">Type (which show)</label>
+      <select id="f-type" required></select>
+    </div>
+    <div class="field">
+      <label for="f-owner">Owner</label>
+      <select id="f-owner" required></select>
+    </div>
+    <fieldset class="field">
+      <legend>Status</legend>
+      <div class="seg" id="f-status">
+        <label><input type="radio" name="status" value="IDEA"><span><span class="sw" style="background:var(--s-idea)"></span>Idea</span></label>
+        <label><input type="radio" name="status" value="WIP"><span><span class="sw" style="background:var(--s-wip)"></span>WIP</span></label>
+        <label><input type="radio" name="status" value="REVIEW"><span><span class="sw" style="background:var(--s-review)"></span>Review</span></label>
+        <label><input type="radio" name="status" value="SCHEDULED"><span><span class="sw" style="background:var(--s-sched)"></span>Scheduled</span></label>
+      </div>
+    </fieldset>
+    <div class="field">
+      <label for="f-note">Note (optional, short)</label>
+      <textarea id="f-note" maxlength="160" rows="2"></textarea>
+    </div>
+    <div class="field">
+      <label for="f-date">Day</label>
+      <div class="row">
+        <input type="date" id="f-date" class="grow">
+        <button class="btn btn-sm" type="button" id="f-nodate">No day yet (backlog)</button>
+      </div>
+      <span class="muted">You can also drag the card to another day later.</span>
+    </div>
+    <p class="err" id="cd-err" hidden></p>
+    <div class="row">
+      <button class="btn btn-sm btn-danger" type="button" id="cd-archive">Archive card</button>
+      <span class="grow"></span>
+      <button class="btn" type="button" id="cd-cancel">Cancel</button>
+      <button class="btn btn-primary" type="submit" id="cd-save">Save card</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="lists-dialog" aria-labelledby="ld-title">
+  <form class="dlg" id="lists-form" method="dialog" novalidate>
+    <h2 id="ld-title">Lists</h2>
+    <p class="sub">Content formats and owners offered on every card. Renaming an entry here does not rename cards that already use it.</p>
+    <div class="field">
+      <span class="field" id="lbl-types" style="font-size:12.5px;color:var(--ink-2)">Content formats</span>
+      <div class="list" id="l-types" aria-labelledby="lbl-types"></div>
+    </div>
+    <div class="field">
+      <span id="lbl-owners" style="font-size:12.5px;color:var(--ink-2)">Owners</span>
+      <div class="list" id="l-owners" aria-labelledby="lbl-owners"></div>
+    </div>
+    <p class="err" id="ld-err" hidden></p>
+    <div class="row end">
+      <button class="btn" type="button" id="ld-cancel">Cancel</button>
+      <button class="btn btn-primary" type="submit" id="ld-save">Save lists</button>
+    </div>
+    <hr>
+    <div class="field">
+      <h3 style="font-size:15px">Archived cards</h3>
+      <div class="arch" id="l-archived"></div>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="confirm-dialog" aria-labelledby="cf-title">
+  <div class="dlg">
+    <h2 id="cf-title">Stamp the standard week</h2>
+    <p id="cf-text"></p>
+    <div class="row end">
+      <button class="btn" type="button" id="cf-cancel">Cancel</button>
+      <button class="btn btn-primary" type="button" id="cf-ok">Stamp 4 cards</button>
+    </div>
+  </div>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden><span id="toast-text"></span><button type="button" id="toast-action" hidden></button></div>
+
+<script>
+(() => {
+'use strict';
+const TZ = 'Europe/Zurich';
+const STATUSES = ['IDEA', 'WIP', 'REVIEW', 'SCHEDULED'];
+const STATUS_LABEL = { IDEA: 'Idea', WIP: 'WIP', REVIEW: 'Review', SCHEDULED: 'Scheduled' };
+const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+// The standard week. Days are suggestions (0 = Monday); the alternating slot follows the ISO week number.
+const STAMP_FIXED = [
+  { type: 'Sensory reel', owner: 'Anouk', day: 1 },
+  { type: 'Story post (Brand Philosophy)', owner: 'Bruno', day: 2 },
+  { type: 'Process carousel', owner: 'Anouk', day: 3 },
+];
+const STAMP_EVEN = { type: 'CTA post + The Record', owner: 'Bruno', day: 4 };
+const STAMP_ODD = { type: 'Process reel (Michael)', owner: 'Michael', day: 4 };
+// Used only by the local preview (file:// or localhost); the live board reads its lists from the store.
+const PREVIEW_LISTS = {
+  types: ['In Search of What Lasts (hero reel)', 'Sensory reel', 'Explainer reel', 'Process carousel', 'Process reel (Michael)',
+    'Story post (Brand Philosophy)', 'CTA post + The Record', 'Playlist post', 'Field Testing / World piece', 'BTS reel'],
+  owners: ['Anouk', 'Bruno', 'Michael'],
+};
+
+const $ = (s, el = document) => el.querySelector(s);
+const el = (tag, attrs = {}, ...kids) => {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === 'class') n.className = v;
+    else if (k === 'text') n.textContent = v;
+    else if (k.startsWith('on')) n.addEventListener(k.slice(2), v);
+    else if (v !== null && v !== undefined) n.setAttribute(k, v);
+  }
+  for (const k of kids) if (k != null) n.append(k);
+  return n;
+};
+
+/* ---------- dates (all arithmetic on YYYY-MM-DD strings, in UTC) ---------- */
+const todayISO = () => new Intl.DateTimeFormat('en-CA', { timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+const toUTC = iso => { const [y, m, d] = iso.split('-').map(Number); return Date.UTC(y, m - 1, d); };
+const fromUTC = ms => new Date(ms).toISOString().slice(0, 10);
+const addDays = (iso, n) => fromUTC(toUTC(iso) + n * 86400000);
+const dow = iso => (new Date(toUTC(iso)).getUTCDay() + 6) % 7;
+const mondayOf = iso => addDays(iso, -dow(iso));
+const parts = iso => { const [y, m, d] = iso.split('-').map(Number); return { y, m, d }; };
+function isoWeek(iso) {
+  const d = new Date(toUTC(iso));
+  d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 6) % 7) + 3);
+  const ft = new Date(Date.UTC(d.getUTCFullYear(), 0, 4));
+  ft.setUTCDate(ft.getUTCDate() - ((ft.getUTCDay() + 6) % 7) + 3);
+  return 1 + Math.round((d - ft) / (7 * 86400000));
+}
+const fmtDay = iso => { const p = parts(iso); return `${DAYS[dow(iso)]} ${p.d} ${MONTHS[p.m - 1]}`; };
+const fmtRange = mon => { const a = parts(mon), b = parts(addDays(mon, 6));
+  return a.m === b.m ? `${a.d}–${b.d} ${MONTHS[a.m - 1]}` : `${a.d} ${MONTHS[a.m - 1]} – ${b.d} ${MONTHS[b.m - 1]}`; };
+const isValidISO = s => /^\d{4}-\d{2}-\d{2}$/.test(s) && !isNaN(toUTC(s));
+const rid = () => 'c_' + (crypto.randomUUID ? crypto.randomUUID().replace(/-/g, '') : Math.random().toString(36).slice(2) + Date.now().toString(36));
+
+/* ---------- state ---------- */
+const state = {
+  db: null, preview: false, readOnly: false,
+  cards: new Map(), cardsLoaded: false,
+  lists: { types: [], owners: [] }, listsLoaded: false,
+  today: todayISO(), startMonday: null, weeks: 6,
+  pending: 0, syncMode: 'connecting', renderQueued: false,
+};
+let editing = null;      // {id} or {date} for a new card
+let confirmAction = null;
+let toastTimer = null, toastAction = null;
+
+/* ---------- sync indicator / notices ---------- */
+function setSync(mode) {
+  if (mode) state.syncMode = mode;
+  const s = $('#sync');
+  const m = state.pending > 0 ? 'saving' : state.syncMode;
+  const text = { connecting: 'Connecting…', live: 'Live', saving: 'Saving…', cache: 'Showing a saved copy', unreachable: 'Can’t reach the board yet', preview: 'Local preview', error: 'Not connected' }[m] || '';
+  s.textContent = text;
+  s.classList.toggle('bad', m === 'unreachable' || m === 'error');
+}
+function notice(text, calm, actions = []) {
+  const n = $('#notice');
+  if (!text) { n.hidden = true; return; }
+  $('#notice-text').textContent = text;
+  const a = $('#notice-actions'); a.innerHTML = '';
+  for (const [label, fn] of actions) a.append(el('button', { class: 'btn btn-sm', type: 'button', onclick: fn, text: label }));
+  n.classList.toggle('calm', !!calm);
+  n.hidden = false;
+}
+function toast(text, actionLabel, actionFn) {
+  const t = $('#toast'); $('#toast-text').textContent = text;
+  const b = $('#toast-action');
+  toastAction = actionFn || null;
+  b.hidden = !actionLabel; if (actionLabel) b.textContent = actionLabel;
+  t.hidden = false;
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; toastAction = null; }, 6000);
+}
+$('#toast-action').addEventListener('click', () => { const f = toastAction; $('#toast').hidden = true; toastAction = null; if (f) f(); });
+
+function explainError(e) {
+  const code = e && e.code;
+  if (code === 'quota_exceeded') return 'The board is full. Delete some archived cards under Edit lists, then try again.';
+  if (code === 'resource_exhausted') return 'Too many changes at once. Wait a moment and try again.';
+  if (code === 'revoked' || code === 'not_granted') return 'Access to the board changed. Reload the page.';
+  if (code === 'invalid_argument') return 'The board refused that change. You may have view-only access; ask the board owner for contributor access.';
+  return 'The change could not be saved. Check your connection and try again.';
+}
+
+/* ---------- writes (one at a time per document) ---------- */
+const chains = new Map();
+function write(path, fn) {
+  const prev = chains.get(path) || Promise.resolve();
+  const p = prev.catch(() => {}).then(() => { state.pending++; setSync(); return fn(); })
+    .finally(() => { state.pending--; setSync(); });
+  chains.set(path, p);
+  return p;
+}
+async function createCard(data) {
+  const id = rid(), now = new Date().toISOString();
+  const doc = { type: '', owner: '', status: 'IDEA', note: '', date: null, order: Date.now(), archived: false, createdAt: now, updatedAt: now, ...data };
+  state.cards.set(id, doc); render();
+  try { await write('cards/' + id, () => state.db.doc('cards/' + id).set(doc)); }
+  catch (e) { state.cards.delete(id); render(); markReadOnlyIfRefused(e); toast(explainError(e)); }
+  return id;
+}
+async function updateCard(id, patch) {
+  const cur = state.cards.get(id); if (!cur) return;
+  const now = new Date().toISOString();
+  state.cards.set(id, { ...cur, ...patch, updatedAt: now }); render();
+  try { await write('cards/' + id, () => state.db.doc('cards/' + id).update({ ...patch, updatedAt: now })); }
+  catch (e) {
+    if (e && e.code === 'invalid_argument' && !state.readOnly) {
+      // Either the card is gone (deleted elsewhere) or this viewer cannot write. Re-read to tell them apart.
+      let exists = true;
+      try { exists = (await state.db.doc('cards/' + id).get()).exists; } catch (_) {}
+      if (!exists) { state.cards.delete(id); render(); toast('That card no longer exists. Someone else deleted it.'); return; }
+    }
+    state.cards.set(id, cur); render(); markReadOnlyIfRefused(e); toast(explainError(e));
+  }
+}
+async function deleteCard(id) {
+  const cur = state.cards.get(id); if (!cur) return;
+  state.cards.delete(id); render();
+  try { await write('cards/' + id, () => state.db.doc('cards/' + id).delete()); }
+  catch (e) { state.cards.set(id, cur); render(); markReadOnlyIfRefused(e); toast(explainError(e)); }
+}
+async function saveLists(lists) {
+  const prev = state.lists; state.lists = lists; render();
+  try { await write('settings/lists', () => state.db.doc('settings/lists').set({ ...lists, updatedAt: new Date().toISOString() })); return true; }
+  catch (e) { state.lists = prev; render(); markReadOnlyIfRefused(e); toast(explainError(e)); return false; }
+}
+function markReadOnlyIfRefused(e) {
+  if (e && e.code === 'invalid_argument' && !state.preview) { state.readOnly = true; render(); }
+}
+
+/* ---------- rendering ---------- */
+function groupCards() {
+  const by = new Map();
+  for (const [id, c] of state.cards) {
+    if (c.archived) continue;
+    const k = c.date || 'backlog';
+    if (!by.has(k)) by.set(k, []);
+    by.get(k).push({ id, ...c });
+  }
+  for (const list of by.values()) list.sort((a, b) => (a.order || 0) - (b.order || 0) || a.id.localeCompare(b.id));
+  return by;
+}
+function cardEl(c) {
+  const a = el('article', { class: 'card s-' + c.status, 'data-id': c.id });
+  a.append(el('span', { class: 'grip', 'aria-hidden': 'true', title: 'Drag to move' }));
+  const main = el('button', { class: 'card-main', type: 'button', 'aria-label': `Edit card: ${c.type || 'untitled'}, ${c.owner || 'no owner'}, ${STATUS_LABEL[c.status] || c.status}` });
+  main.append(el('span', { class: 'type', text: c.type || '(no type)' }));
+  const meta = el('span', { class: 'meta' }, el('span', { class: 'owner', text: c.owner || '(no owner)' }));
+  main.append(meta);
+  if (c.note) main.append(el('span', { class: 'note', text: c.note }));
+  a.append(main);
+  const i = STATUSES.indexOf(c.status);
+  const next = STATUSES[(i + 1) % 4], back = STATUSES[(i + 3) % 4];
+  const st = el('button', { class: 'status', type: 'button', text: STATUS_LABEL[c.status] || c.status,
+    title: `Click: ${STATUS_LABEL[next]}. Shift+click: ${STATUS_LABEL[back]}.`,
+    'aria-label': `Status ${STATUS_LABEL[c.status] || c.status}. Click to set ${STATUS_LABEL[next]}, shift+click to set ${STATUS_LABEL[back]}.` });
+  a.append(st);
+  return a;
+}
+function addBtn(date, label) {
+  return el('button', { class: 'btn btn-quiet btn-sm add', type: 'button', text: label || '+ Add',
+    'aria-label': date ? `Add a card on ${fmtDay(date)}` : 'Add a card to the backlog',
+    onclick: () => openCard(null, date) });
+}
+function weekEl(mon, by) {
+  const w = el('section', { class: 'week', 'aria-label': `Week ${isoWeek(mon)}, ${fmtRange(mon)}` });
+  const g = el('div', { class: 'gutter' });
+  const wn = el('div', { class: 'wn' }, el('small', { text: 'week' }), document.createTextNode(String(isoWeek(mon))));
+  g.append(wn, el('span', { class: 'range', text: fmtRange(mon) }));
+  const stamp = el('button', { class: 'btn btn-quiet btn-sm', type: 'button', text: 'Stamp', title: 'Stamp the standard week',
+    'aria-label': `Stamp the standard week into week ${isoWeek(mon)}`, onclick: () => askStamp(mon) });
+  if (state.readOnly) stamp.disabled = true;
+  g.append(stamp);
+  w.append(g);
+  for (let i = 0; i < 7; i++) {
+    const date = addDays(mon, i), p = parts(date);
+    const d = el('div', { class: 'day' + (date < state.today ? ' past' : '') + (date === state.today ? ' today' : ''), 'data-drop': 'day', 'data-date': date });
+    const head = el('div', { class: 'day-head' }, el('span', { class: 'd', text: DAYS[i] }), el('span', { class: 'n', text: String(p.d) }));
+    if (p.d === 1 || (i === 0 && mon === state.startMonday)) head.append(el('span', { class: 'm', text: MONTHS[p.m - 1] + (p.m === 1 && p.d === 1 ? ' ' + p.y : '') }));
+    d.append(head);
+    const cards = el('div', { class: 'cards' });
+    for (const c of by.get(date) || []) cards.append(cardEl(c));
+    d.append(cards);
+    if (!state.readOnly) d.append(addBtn(date));
+    w.append(d);
+  }
+  return w;
+}
+function render() {
+  if (drag && drag.active) { state.renderQueued = true; return; }
+  const by = groupCards();
+  const weeks = $('#weeks'); weeks.innerHTML = '';
+  for (let i = 0; i < state.weeks; i++) weeks.append(weekEl(addDays(state.startMonday, i * 7), by));
+  const lane = $('#backlog'); lane.innerHTML = '';
+  const bl = by.get('backlog') || [];
+  if (!bl.length) lane.append(el('div', { class: 'empty', text: state.cardsLoaded ? 'Nothing waiting. Ideas without a day land here.' : 'Loading the board…' }));
+  for (const c of bl) lane.append(cardEl(c));
+  $('#btn-add-backlog').hidden = state.readOnly;
+  if (state.readOnly) notice('You can view this board but not change it. Ask the board owner for contributor access.', true);
+}
+
+/* ---------- card dialog ---------- */
+function fillSelect(sel, items, current) {
+  sel.innerHTML = '';
+  const list = items.slice();
+  if (current && !list.includes(current)) list.unshift(current);
+  if (!list.length) { sel.append(el('option', { value: '', text: 'Nothing in the list yet. Use Edit lists first.' })); return; }
+  for (const it of list) sel.append(el('option', { value: it, text: it + (items.includes(it) ? '' : ' (no longer in the list)') }));
+  sel.value = current || list[0];
+}
+function openCard(id, date) {
+  const dlg = $('#card-dialog');
+  const c = id ? state.cards.get(id) : null;
+  editing = id ? { id } : { date: date || null };
+  $('#cd-title').textContent = c ? 'Edit card' : 'New card';
+  $('#cd-sub').textContent = c ? `Added ${c.createdAt ? c.createdAt.slice(0, 10) : ''}` : (date ? fmtDay(date) : 'Backlog');
+  fillSelect($('#f-type'), state.lists.types, c ? c.type : '');
+  fillSelect($('#f-owner'), state.lists.owners, c ? c.owner : '');
+  const st = c ? c.status : 'IDEA';
+  for (const r of dlg.querySelectorAll('input[name=status]')) r.checked = r.value === st;
+  $('#f-note').value = c ? (c.note || '') : '';
+  $('#f-date').value = c ? (c.date || '') : (date || '');
+  $('#cd-archive').hidden = !c;
+  $('#cd-err').hidden = true;
+  const ro = state.readOnly;
+  for (const x of dlg.querySelectorAll('select,textarea,input,#cd-save,#cd-archive,#f-nodate')) x.disabled = ro;
+  $('#cd-cancel').disabled = false;
+  dlg.showModal();
+  $('#f-type').focus();
+}
+$('#f-nodate').addEventListener('click', () => { $('#f-date').value = ''; });
+$('#cd-cancel').addEventListener('click', () => $('#card-dialog').close());
+$('#card-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const type = $('#f-type').value.trim(), owner = $('#f-owner').value.trim();
+  const status = ($('#card-dialog').querySelector('input[name=status]:checked') || {}).value || 'IDEA';
+  const note = $('#f-note').value.trim();
+  const dv = $('#f-date').value.trim();
+  const err = $('#cd-err');
+  if (!type || !owner) { err.textContent = 'Pick a type and an owner. If the lists are empty, add entries under Edit lists first.'; err.hidden = false; return; }
+  if (dv && !isValidISO(dv)) { err.textContent = 'That day is not a valid date.'; err.hidden = false; return; }
+  const date = dv || null;
+  $('#card-dialog').close();
+  if (editing && editing.id) {
+    const cur = state.cards.get(editing.id);
+    const patch = { type, owner, status, note };
+    if (cur && cur.date !== date) { patch.date = date; patch.order = Date.now(); }
+    await updateCard(editing.id, patch);
+  } else {
+    await createCard({ type, owner, status, note, date });
+  }
+  editing = null;
+});
+$('#cd-archive').addEventListener('click', async () => {
+  if (!editing || !editing.id) return;
+  const id = editing.id; $('#card-dialog').close(); editing = null;
+  await updateCard(id, { archived: true });
+  toast('Card archived.', 'Undo', () => updateCard(id, { archived: false }));
+});
+
+/* ---------- status cycling ---------- */
+document.addEventListener('click', e => {
+  const st = e.target.closest('.card .status');
+  if (st) {
+    e.stopPropagation();
+    const id = st.closest('.card').dataset.id, c = state.cards.get(id); if (!c || state.readOnly) return;
+    const i = STATUSES.indexOf(c.status);
+    updateCard(id, { status: STATUSES[(i + (e.shiftKey ? 3 : 1)) % 4] });
+    return;
+  }
+  const main = e.target.closest('.card .card-main');
+  if (main) openCard(main.closest('.card').dataset.id);
+});
+
+/* ---------- stamp ---------- */
+function askStamp(mon) {
+  const wk = isoWeek(mon), alt = wk % 2 === 0 ? STAMP_EVEN : STAMP_ODD;
+  confirmAction = async () => {
+    const set = [...STAMP_FIXED, alt];
+    let n = 0;
+    for (const s of set) { await createCard({ type: s.type, owner: s.owner, status: 'IDEA', date: addDays(mon, s.day), order: Date.now() + n++ }); }
+    toast(`Stamped 4 cards into week ${wk}. Drag them to other days as needed.`);
+  };
+  $('#cf-text').textContent = `Add the standard set to week ${wk} (${fmtRange(mon)}): Sensory reel (Anouk), Story post (Bruno), Process carousel (Anouk) and, this week, ${alt.type} (${alt.owner}). All start as Idea.`;
+  $('#confirm-dialog').showModal();
+  $('#cf-ok').focus();
+}
+$('#cf-cancel').addEventListener('click', () => $('#confirm-dialog').close());
+$('#cf-ok').addEventListener('click', () => { const f = confirmAction; confirmAction = null; $('#confirm-dialog').close(); if (f) f(); });
+
+/* ---------- lists dialog ---------- */
+function listRow(value, container) {
+  const row = el('div', { class: 'item' });
+  const inp = el('input', { type: 'text', value, 'aria-label': 'Entry', maxlength: '80' });
+  const rm = el('button', { class: 'btn btn-quiet btn-sm', type: 'button', text: 'Remove', 'aria-label': `Remove ${value}`, onclick: () => row.remove() });
+  row.append(inp, rm); container.append(row);
+}
+function newRow(container, placeholder) {
+  const row = el('div', { class: 'item new' });
+  const inp = el('input', { type: 'text', placeholder, 'aria-label': placeholder, maxlength: '80' });
+  const add = () => { const v = inp.value.trim(); if (!v) return; listRow(v, container); container.append(row); inp.value = ''; inp.focus(); };
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); add(); } });
+  row.append(inp, el('button', { class: 'btn btn-sm', type: 'button', text: 'Add', onclick: add }));
+  container.append(row);
+}
+function readList(container) {
+  const out = [];
+  for (const i of container.querySelectorAll('.item:not(.new) input')) { const v = i.value.trim(); if (v && !out.includes(v)) out.push(v); }
+  return out;
+}
+function renderArchived() {
+  const box = $('#l-archived'); box.innerHTML = '';
+  const arch = [...state.cards].filter(([, c]) => c.archived).map(([id, c]) => ({ id, ...c })).sort((a, b) => (b.updatedAt || '').localeCompare(a.updatedAt || ''));
+  if (!arch.length) { box.append(el('p', { class: 'muted', text: 'No archived cards.' })); return; }
+  for (const c of arch) {
+    const row = el('div', { class: 'item' });
+    row.append(el('span', { class: 'what', text: `${c.type} · ${c.owner}${c.date ? ' · ' + fmtDay(c.date) : ''}` }));
+    row.append(el('span', { class: 'when', text: 'archived ' + (c.updatedAt || '').slice(0, 10) }));
+    const restore = el('button', { class: 'btn btn-sm', type: 'button', text: 'Restore', onclick: async () => { await updateCard(c.id, { archived: false }); renderArchived(); } });
+    const del = el('button', { class: 'btn btn-sm btn-danger', type: 'button', text: 'Delete for good' });
+    del.addEventListener('click', async () => {
+      if (del.dataset.armed !== '1') { del.dataset.armed = '1'; del.textContent = 'Really delete?'; return; }
+      await deleteCard(c.id); renderArchived();
+    });
+    if (state.readOnly) { restore.disabled = true; del.disabled = true; }
+    row.append(restore, del); box.append(row);
+  }
+}
+function openLists() {
+  const t = $('#l-types'), o = $('#l-owners'); t.innerHTML = ''; o.innerHTML = '';
+  for (const v of state.lists.types) listRow(v, t); newRow(t, 'New format');
+  for (const v of state.lists.owners) listRow(v, o); newRow(o, 'New owner');
+  renderArchived();
+  $('#ld-err').hidden = true;
+  const ro = state.readOnly;
+  for (const x of $('#lists-dialog').querySelectorAll('input,#ld-save,.list button')) x.disabled = ro;
+  $('#lists-dialog').showModal();
+}
+$('#btn-lists').addEventListener('click', openLists);
+$('#ld-cancel').addEventListener('click', () => $('#lists-dialog').close());
+$('#lists-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const types = readList($('#l-types')), owners = readList($('#l-owners'));
+  if (!types.length || !owners.length) { const er = $('#ld-err'); er.textContent = 'Keep at least one format and one owner.'; er.hidden = false; return; }
+  $('#lists-dialog').close();
+  if (await saveLists({ types, owners })) toast('Lists saved.');
+});
+
+/* ---------- window controls ---------- */
+$('#btn-earlier').addEventListener('click', () => { state.startMonday = addDays(state.startMonday, -28); state.weeks = Math.min(state.weeks + 4, 60); render(); });
+$('#btn-later').addEventListener('click', () => { state.weeks = Math.min(state.weeks + 4, 60); render(); });
+$('#btn-thisweek').addEventListener('click', () => { state.today = todayISO(); state.startMonday = mondayOf(state.today); state.weeks = 6; render(); window.scrollTo({ top: 0 }); });
+$('#btn-add-backlog').addEventListener('click', () => openCard(null, null));
+
+/* ---------- drag and drop (pointer events; grip on touch, whole card with a mouse) ---------- */
+let drag = null, lastDragEnd = 0, scrollRaf = 0;
+document.addEventListener('pointerdown', e => {
+  const card = e.target.closest('.card'); if (!card || state.readOnly) return;
+  if (e.target.closest('.status')) return;
+  if (e.pointerType === 'mouse' ? e.button !== 0 : !e.target.closest('.grip')) return;
+  drag = { id: card.dataset.id, el: card, x0: e.clientX, y0: e.clientY, x: e.clientX, y: e.clientY, active: false, pid: e.pointerId, ghost: null, over: null };
+});
+document.addEventListener('pointermove', e => {
+  if (!drag || e.pointerId !== drag.pid) return;
+  drag.x = e.clientX; drag.y = e.clientY;
+  if (!drag.active) {
+    if (Math.hypot(e.clientX - drag.x0, e.clientY - drag.y0) < 6) return;
+    startDrag();
+  }
+  moveDrag();
+});
+document.addEventListener('pointerup', e => { if (!drag || e.pointerId !== drag.pid) return; if (drag.active) endDrag(true); drag = null; });
+document.addEventListener('pointercancel', e => { if (!drag || e.pointerId !== drag.pid) return; if (drag.active) endDrag(false); drag = null; });
+document.addEventListener('click', e => { if (Date.now() - lastDragEnd < 250 && e.target.closest('.card')) { e.stopPropagation(); e.preventDefault(); } }, true);
+function startDrag() {
+  drag.active = true;
+  const r = drag.el.getBoundingClientRect();
+  drag.dx = drag.x0 - r.left; drag.dy = drag.y0 - r.top;
+  const g = drag.el.cloneNode(true); g.classList.add('ghost'); g.classList.remove('dragging');
+  g.style.width = r.width + 'px'; g.style.left = r.left + 'px'; g.style.top = r.top + 'px';
+  document.body.append(g); drag.ghost = g;
+  drag.el.classList.add('dragging');
+  document.body.style.cursor = 'grabbing';
+  scrollLoop();
+}
+function moveDrag() {
+  drag.ghost.style.left = (drag.x - drag.dx) + 'px'; drag.ghost.style.top = (drag.y - drag.dy) + 'px';
+  const under = document.elementFromPoint(drag.x, drag.y);
+  const zone = under && under.closest('[data-drop]');
+  if (zone !== drag.over) { if (drag.over) drag.over.classList.remove('drop'); drag.over = zone; if (zone) zone.classList.add('drop'); }
+}
+function scrollLoop() {
+  if (!drag || !drag.active) { scrollRaf = 0; return; }
+  const h = window.innerHeight, edge = 70;
+  if (drag.y < edge) window.scrollBy(0, -Math.ceil((edge - drag.y) / 5));
+  else if (drag.y > h - edge) window.scrollBy(0, Math.ceil((drag.y - (h - edge)) / 5));
+  scrollRaf = requestAnimationFrame(scrollLoop);
+}
+function endDrag(commit) {
+  const zone = commit ? drag.over : null;
+  if (drag.over) drag.over.classList.remove('drop');
+  if (drag.ghost) drag.ghost.remove();
+  drag.el.classList.remove('dragging');
+  document.body.style.cursor = '';
+  lastDragEnd = Date.now();
+  drag.active = false;
+  const id = drag.id, c = state.cards.get(id);
+  if (zone && c) {
+    const date = zone.dataset.drop === 'backlog' ? null : zone.dataset.date;
+    if (date !== (c.date || null)) updateCard(id, { date, order: Date.now() });
+  }
+  if (state.renderQueued) { state.renderQueued = false; render(); }
+}
+
+/* ---------- local preview store (file:// or localhost only) ---------- */
+function makePreviewDb() {
+  const store = new Map(), listeners = new Set();
+  store.set('settings/lists', structuredClone(PREVIEW_LISTS));
+  const notify = () => { for (const l of listeners) l(); };
+  const snap = (id, d) => ({ id, exists: d !== undefined, data: () => d ? structuredClone(d) : undefined, metadata: { fromCache: false, hasPendingWrites: false } });
+  const docRef = path => ({
+    id: path.split('/').pop(), path,
+    async get() { return snap(this.id, store.get(path)); },
+    async set(d) { store.set(path, structuredClone(d)); notify(); },
+    async update(d) { if (!store.has(path)) throw { code: 'invalid_argument', message: 'missing' }; store.set(path, { ...store.get(path), ...structuredClone(d) }); notify(); },
+    async delete() { store.delete(path); notify(); },
+    onSnapshot(next) { const fn = () => next(snap(this.id, store.get(path))); listeners.add(fn); setTimeout(fn, 0); return () => listeners.delete(fn); },
+  });
+  const collRef = path => ({
+    path, doc(id) { return docRef(path + '/' + (id || rid())); },
+    onSnapshot(next) {
+      const fn = () => { const docs = []; for (const [p, d] of store) if (p.startsWith(path + '/') && !p.slice(path.length + 1).includes('/')) docs.push(snap(p.split('/').pop(), d));
+        docs.sort((a, b) => a.id.localeCompare(b.id)); next({ docs, size: docs.length, empty: !docs.length, docChanges: () => [], metadata: { fromCache: false, hasPendingWrites: false } }); };
+      listeners.add(fn); setTimeout(fn, 0); return () => listeners.delete(fn);
+    },
+  });
+  return { doc: docRef, collection: collRef };
+}
+
+/* ---------- boot ---------- */
+function subscribe() {
+  const timer = setTimeout(() => { if (!state.cardsLoaded) setSync('unreachable'); }, 10000);
+  state.db.collection('cards').onSnapshot(s => {
+    state.cards = new Map(s.docs.map(d => [d.id, d.data()]));
+    state.cardsLoaded = true;
+    if (s.metadata.fromCache) setSync('cache'); else { clearTimeout(timer); setSync(state.preview ? 'preview' : 'live'); }
+    render();
+  }, e => { clearTimeout(timer); setSync('error'); notice(explainError(e), false, [['Reload', () => location.reload()]]); });
+  state.db.doc('settings/lists').onSnapshot(s => {
+    const d = s.exists ? s.data() : {};
+    state.lists = { types: Array.isArray(d.types) ? d.types.filter(x => typeof x === 'string') : [], owners: Array.isArray(d.owners) ? d.owners.filter(x => typeof x === 'string') : [] };
+    state.listsLoaded = true;
+    if (s.exists === false && !s.metadata.fromCache && !state.readOnly) notice('The type and owner lists are empty. Add them under Edit lists before creating cards.', true, [['Edit lists', openLists]]);
+    else if (!state.readOnly) notice(null);
+  }, e => { setSync('error'); notice(explainError(e)); });
+}
+async function boot() {
+  state.today = todayISO(); state.startMonday = mondayOf(state.today);
+  render(); setSync('connecting');
+  const local = location.protocol === 'file:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+  let db = null, user = null;
+  if (window.claude && typeof window.claude.use === 'function') {
+    try { [db, user] = await Promise.all([window.claude.use('db'), window.claude.use('user')]); } catch (_) { db = null; }
+  }
+  if (!db && local) { db = makePreviewDb(); state.preview = true; notice('Local preview. Nothing changed here is saved or shared.', true); }
+  if (!db) { setSync('error'); notice('The shared board is not available in this view. Sign in to claude.ai and open the board link again.', false, [['Reload', () => location.reload()]]); return; }
+  state.db = db;
+  if (user && typeof user.can === 'function') { try { if ((await user.can('data.write')) === false) state.readOnly = true; } catch (_) {} }
+  subscribe();
+  // Keep "today" right for a tab left open overnight.
+  setInterval(() => { const t = todayISO(); if (t !== state.today) { state.today = t; render(); } }, 60000);
+}
+boot();
+})();
+</script>
